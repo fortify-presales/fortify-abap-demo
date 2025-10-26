@@ -9,7 +9,7 @@
 |**Service Type**<br>None|
 |**Service URL**<br>N/A|
 |**Module Name**<br>z_ui5_fiori|
-|**Application Title**<br>Discount Approvals|
+|**Application Title**<br>Card Transactions|
 |**Namespace**<br>com.fortify.demo|
 |**UI5 Theme**<br>sap_horizon|
 |**UI5 Version**<br>1.120.14|
@@ -19,7 +19,7 @@
 
 ## z_ui5_fiori
 
-An SAP Fiori application for Discount Approvals
+An SAP Fiori application for Card Transactions
 
 ### Starting the generated app
 

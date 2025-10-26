@@ -17,11 +17,11 @@
     },
     "crossNavigation": {
       "inbounds": {
-        "DiscountApproval-manage": {
-          "semanticObject": "DiscountApproval",
+        "CardTransaction-manage": {
+          "semanticObject": "CardTransaction",
           "action": "manage",
-          "title": "{{DiscountApproval-manage.flpTitle}}",
-          "subTitle": "{{DiscountApproval-manage.flpSubtitle}}",
+          "title": "{{CardTransaction-manage.flpTitle}}",
+          "subTitle": "{{CardTransaction-manage.flpSubtitle}}",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -29,17 +29,7 @@
         }
       }
     },
-    "dataSources": {
-      "mainService": {
-        "uri": "/sap/opu/odata/sap/EPM_REF_APPS_SHOP_SRV/",
-        "type": "OData",
-        "settings": {
-          "annotations": [],
-          "localUri": "localService/mainService/metadata.xml",
-          "odataVersion": "2.0"
-        }
-      }
-    }
+    "dataSources": {}
   },
   "sap.ui": {
     "technology": "UI5",
@@ -63,7 +53,8 @@
       "minUI5Version": "1.120.14",
       "libs": {
         "sap.m": {},
-        "sap.ui.core": {}
+        "sap.ui.core": {},
+        "sap.ui.richtexteditor": {}
       }
     },
     "contentDensities": {
@@ -76,11 +67,6 @@
         "settings": {
           "bundleName": "com.fortify.demo.zui5fiori.i18n.i18n"
         }
-      },
-      "": {
-        "dataSource": "mainService",
-        "preload": true,
-        "settings": {}
       }
     },
     "resources": {

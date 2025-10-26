@@ -1,0 +1,11 @@
+{
+    "base": "./dist",
+    "conn_usestrictssl": false,
+    "conn_server": "http://vhcala4hci:50000",
+    "conn_client": "001",
+    "conn_user": "DEVELOPER",
+    "conn_password": "ABAPtr2023#00",
+    "abap_package": "$TMP",
+    "abap_bsp": "ZCARD_TXN_APP",
+    "abap_bsp_text": "Card Transactions App"
+}

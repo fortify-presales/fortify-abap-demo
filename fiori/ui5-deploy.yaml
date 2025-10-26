@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
 specVersion: "3.1"
 metadata:
   name: com.fortify.demo.zui5fiori
@@ -11,16 +13,13 @@ builder:
     - name: deploy-to-abap
       afterTask: generateCachebusterInfo
       configuration:
-        verbose: true
-        ignoreCertErrors: true
-        strictSSL: false
         target:
-          url: http://minisap.onfortify.com:50000 # Add your SAP system URL here
-          client: "001"
+          url: http://vhcala4hci:50000
+          client: '001'
         app:
-          name: Z_DISCAPPRV
-          description: Discount Approvals
-          package: Z_FORTIFY_DEMO
-          transport: A4HK900168 # Add your transport number here
+          name: ZCARD_TXN_APP
+          description: Card Transaction Fiori App
+          package: Z_FIORI_APP
+          transport: A4HK900168
         exclude:
           - /test/

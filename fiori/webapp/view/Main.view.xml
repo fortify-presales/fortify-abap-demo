@@ -1,6 +1,15 @@
 <mvc:View controllerName="com.fortify.demo.zui5fiori.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
+    xmlns="sap.m"
+    xmlns:rt="sap.ui.richtexteditor">
     <Page id="page" title="{i18n>title}">
+        <VBox id="vbox" width="80%" alignItems="Start">
+            <Label id="userInputLabel" text="User Input:" labelFor="userInputField" />
+            <Input id="userInputField" placeholder="Enter something..." />
+            <Label id="richTextEditorLabel" text="Rich Text Editor:" labelFor="richTextEditor" />
+            <rt:RichTextEditor id="richTextEditor" sanitizeValue="false" width="100%" height="200px" />
+            <Button id="submitButton" text="Submit" press="onSubmitInput" />
+            <!--Text id="userOutputDiv" text="" width="100%" /-->
+        </VBox>
     </Page>
 </mvc:View>

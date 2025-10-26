@@ -238,5 +238,20 @@ Login as: DEVELOPER/ABAPtr2023#00
 
 It might take a while to login the first time.
 
+## Deploying the Fiori App
+
+There is a simple Fiori Demo App that can be used for demonstrations in the `fiori` folder.
+To deploy it you can carry out the following:
+
+```
+cd fiori
+npm run build
+npm run deploy-local
+```
+
+Then follow the instructions [here](https://blog.tinhtd.info/2021/07/deploy-sapui5-application-into-fiori.html)
+
+Note: The `/UI2/SEMOBJ` transactions is available through `/N/UI2/SEMOBJ`.
+
 ---
 kadraman (klee2@opentext.com)

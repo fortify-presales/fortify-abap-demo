@@ -29,6 +29,7 @@ on:
   push:
     paths-ignore:
       - '.github/**/**'
+      - 'fiori/**/*'
       - 'docs/**'
       - 'files/**'
       - 'media/**'
@@ -60,8 +61,8 @@ jobs:
   Env-Prepare:
     runs-on: ubuntu-latest
     outputs:
-      FOD_RELEASE: ${{ steps.commands.outputs.FOD_RELEASE }}
-      FOD_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_PARENT_RELEASE }}
+      FOD_ABAP_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_RELEASE }}
+      FOD_ABAP_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,12 +71,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Running in a pull request pipeline ..."
-            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}" >> $GITHUB_OUTPUT
-            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}_abap" >> $GITHUB_OUTPUT
           else
             echo "Running in a branch pipeline ..."
-            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
-            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}_abap" >> $GITHUB_OUTPUT
           fi
 
   Build-And-Unit-Test:
@@ -91,8 +92,8 @@ jobs:
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
     needs: [ Env-Prepare, Build-And-Unit-Test ]
     env: 
-      FOD_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_RELEASE }}
-      FOD_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_PARENT_RELEASE }}
+      FOD_ABAP_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_RELEASE }}
+      FOD_ABAP_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -103,7 +104,7 @@ jobs:
         uses: fortify/github-action@v1
         with:
           sast-scan: true
-          debricked-sca-scan: true # we could do this separately using fcli
+          debricked-sca-scan: false # we could do this separately using fcli
         env:
           FOD_URL: ${{ vars.FOD_URL }}
           #FOD_TENANT: ${{secrets.FOD_TENANT}}
@@ -112,10 +113,11 @@ jobs:
           FOD_CLIENT_ID: ${{secrets.FOD_CLIENT_ID}}
           FOD_CLIENT_SECRET: ${{secrets.FOD_CLIENT_SECRET}}
           # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
-          FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
+          # FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
+          FOD_RELEASE: ${{ env.FOD_ABAP_RELEASE }}
           # DO_SETUP: true
           # SETUP_ACTION: https://scm.my.org/shared-repos/fcli-actions/setup.yaml
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
+          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_ABAP_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
           PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files" -exclude "fiori"

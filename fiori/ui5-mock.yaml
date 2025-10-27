@@ -19,6 +19,9 @@ server:
           - url: http://vhcala4hci:50000
             client: '001'
             path: /sap
+          - url: http://minisap.onfortify.com:50000
+            client: '001'
+            path: /sap/opu/odata/sap/ZV_PROD_CARD_TXN_CDS/
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:
@@ -34,5 +37,11 @@ server:
       beforeMiddleware: csp
       configuration:
         mountPath: /
-        services: []
-        annotations: []
+        services:
+          - urlPath: /sap/opu/odata/sap/ZV_PROD_CARD_TXN_CDS
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
+            generateMockData: true
+        annotations:
+          - localPath: ./webapp/localService/mainService/ZV_PROD_CARD_TXN_CDS_VAN.xml
+            urlPath: /sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZV_PROD_CARD_TXN_CDS_VAN',Version='0001')/$value/

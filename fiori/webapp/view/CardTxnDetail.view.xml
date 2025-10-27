@@ -1,0 +1,13 @@
+<mvc:View controllerName="com.fortify.demo.zui5fiori.controller.CardTxnDetail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="cardTxnDetailPage" title="Card Transaction Detail">
+        <ObjectHeader title="{detail>/product_name}" number="{detail>/amount}" numberUnit="{detail>/currency}" />
+        <Text text="{detail>/description}" />
+        <Text text="Transaction ID: {detail>/txn_id}" />
+        <Text text="Product ID: {detail>/product_id}" />
+        <Text text="Card ID: {detail>/card_id}" />
+        <Text text="Cardholder: {detail>/cardholder_name}" />
+        <Button text="Back" press="onNavBack" />
+    </Page>
+</mvc:View>

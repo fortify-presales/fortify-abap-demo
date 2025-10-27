@@ -26,10 +26,39 @@
             "parameters": {},
             "additionalParameters": "allowed"
           }
+        },
+        "app-preview": {
+          "semanticObject": "app",
+          "action": "preview",
+          "title": "App Preview",
+          "subTitle": "Preview the Fiori app",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
         }
       }
     },
-    "dataSources": {}
+    "dataSources": {
+      "ZV_PROD_CARD_TXN_CDS_VAN": {
+        "uri": "/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Annotations(TechnicalName='ZV_PROD_CARD_TXN_CDS_VAN',Version='0001')/$value/",
+        "type": "ODataAnnotation",
+        "settings": {
+          "localUri": "localService/mainService/ZV_PROD_CARD_TXN_CDS_VAN.xml"
+        }
+      },
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZV_PROD_CARD_TXN_CDS/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "ZV_PROD_CARD_TXN_CDS_VAN"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    }
   },
   "sap.ui": {
     "technology": "UI5",
@@ -67,6 +96,11 @@
         "settings": {
           "bundleName": "com.fortify.demo.zui5fiori.i18n.i18n"
         }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
       }
     },
     "resources": {
@@ -90,17 +124,33 @@
       },
       "routes": [
         {
-          "name": "RouteMain",
-          "pattern": ":?query:",
-          "target": [
-            "TargetMain"
-          ]
+          "name": "RouteCardTxnSummary",
+          "pattern": "",
+          "target": ["TargetCardTxnSummary"]
+        },
+        {
+          "name": "RouteCardTxnDetail",
+          "pattern": "cardtxndetail/txn_id={txn_id}&product_id={product_id}&card_id={card_id}",
+          "target": ["TargetCardTxnDetail"]
+        },
+        {
+          "name": "RouteContact",
+          "pattern": "contact",
+          "target": ["TargetContact"]
         }
       ],
       "targets": {
-        "TargetMain": {
-          "id": "Main",
-          "name": "Main"
+        "TargetCardTxnSummary": {
+          "id": "CardTxnSummary",
+          "name": "CardTxnSummary"
+        },
+        "TargetCardTxnDetail": {
+          "id": "CardTxnDetail",
+          "name": "CardTxnDetail"
+        },
+        "TargetContact": {
+          "id": "Contact",
+          "name": "Contact"
         }
       }
     },

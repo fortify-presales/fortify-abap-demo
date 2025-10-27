@@ -19,6 +19,9 @@ server:
           - url: http://vhcala4hci:50000
             client: '001'
             path: /sap
+          - url: http://minisap.onfortify.com:50000
+            client: '001'
+            path: /sap/opu/odata/sap/ZV_PROD_CARD_TXN_CDS/
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

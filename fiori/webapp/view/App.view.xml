@@ -2,6 +2,29 @@
     displayBlock="true"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
-    <App id="app">
-    </App>
+    <tnt:ToolPage id="toolPage" xmlns:tnt="sap.tnt" headerTitle="Card Transactions">
+        <tnt:sideContent>
+            <tnt:SideNavigation expanded="true" itemSelect="onSideNavSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem text="Contact" key="Contact" />
+                    <tnt:NavigationListItem text="CardTxnSummary" key="CardTxnSummary" />
+                    <tnt:NavigationListItem text="CardTxnDetail" key="CardTxnDetail" />
+                    <!-- Add more NavigationListItems for other views/pages here -->
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContent>
+            <Bar>
+                <contentLeft>
+                    <Button text="Contact" press="onNavToContact" />
+                    <Button text="CardTxnSummary" press="onNavToCardTxnSummary" />
+                </contentLeft>
+            </Bar>
+            <VBox>
+                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.Contact" visible="{= ${viewModel>/selectedView} === 'Contact' }" />
+                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.CardTxnSummary" visible="{= ${viewModel>/selectedView} === 'CardTxnSummary' }" />
+                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.CardTxnDetail" visible="{= ${viewModel>/selectedView} === 'CardTxnDetail' }" />
+            </VBox>
+        </tnt:mainContent>
+    </tnt:ToolPage>
 </mvc:View>

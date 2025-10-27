@@ -1,11 +1,91 @@
 <mvc:View controllerName="com.fortify.demo.zui5fiori.controller.CardTxnSummary"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="cardTxnSummaryPage" title="Card Transaction Summary">
-        <List id="summaryList" items="{/zv_prod_card_txn}">
-            <items>
-                <StandardListItem title="{product_name}" description="{description}" type="Navigation" press="onItemPress" />
-            </items>
-        </List>
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Page id="cardTxnSummaryPage" title="Card Transactions" >
+        <content>
+                <Table id="cardTxnTable"
+                    items="{/zv_prod_card_txn}"
+                    growing="true"
+                    growingThreshold="20"
+                    class="sapUiResponsiveMargin"
+                    width="auto"
+                    sticky="ColumnHeaders,HeaderToolbar,InfoToolbar">
+                    <headerToolbar>
+                        <OverflowToolbar id="tableToolbar" design="Transparent">
+                            <Title id="tableTitle" text="" level="H2"/>
+                            <ToolbarSpacer id="txnToolbarSpacer"/>
+                            <SearchField id="txnSearchField" width="50%" search=".onSearch" placeholder="Search transactions..." />
+                            <Button id="sendQueryBtn" text="Send Query" icon="sap-icon://email" type="Emphasized" press=".onSendQuery" />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <infoToolbar>
+                        <OverflowToolbar id="filterToolbar" design="Info">
+                            <Label id="filterLabel" text="Filters:" design="Bold"/>
+                            <ComboBox id="statusFilter" 
+                                placeholder="Filter by Status" 
+                                change=".onFilterChange"
+                                width="200px">
+                                <items>
+                                    <core:Item id="statusAll" key="" text="All Statuses" />
+                                    <core:Item id="statusApproved" key="APPROVED" text="Approved" />
+                                    <core:Item id="statusPending" key="PENDING" text="Pending" />
+                                    <core:Item id="statusRejected" key="REJECTED" text="Rejected" />
+                                </items>
+                            </ComboBox>
+                            <Button id="clearFiltersBtn" text="Clear Filters" press=".onClearFilters" type="Transparent" icon="sap-icon://clear-filter" />
+                        </OverflowToolbar>
+                    </infoToolbar>
+                    <columns>
+                        <Column id="txnIdColumn" width="10em" demandPopin="false">
+                            <Text id="txnIdHeader" text="Transaction ID" />
+                        </Column>
+                        <Column id="txnDateColumn" minScreenWidth="Tablet" demandPopin="true">
+                            <Text id="txnDateHeader" text="Date" />
+                        </Column>
+                        <Column id="productColumn" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                            <Text id="productHeader" text="Product" />
+                        </Column>
+                        <Column id="cardholderColumn" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                            <Text id="cardholderHeader" text="Cardholder" />
+                        </Column>
+                        <Column id="amountColumn" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+                            <Text id="amountHeader" text="Amount" />
+                        </Column>
+                        <Column id="statusColumn" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                            <Text id="statusHeader" text="Status" />
+                        </Column>
+                        <Column id="descriptionColumn" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                            <Text id="descriptionHeader" text="Description" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem id="cardTxnItem" type="Navigation" press=".onItemPress">
+                            <cells>
+                                <ObjectIdentifier id="txnId" title="{txn_id}" />
+                                <Text id="txnDate" text="{path: 'txn_date', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/yyyy'}}" />
+                                <VBox id="productBox">
+                                    <Text id="txnProductName" text="{product_name}" class="sapUiTinyMarginBottom" />
+                                    <Label id="productIdLabel" text="ID: {product_id}" design="Bold" />
+                                </VBox>
+                                <Text id="cardholderName" text="{cardholder_name}" />
+                                <ObjectNumber id="amount" number="{
+                                    path: 'amount',
+                                    type: 'sap.ui.model.type.Float',
+                                    formatOptions: {
+                                        minFractionDigits: 2,
+                                        maxFractionDigits: 2
+                                    }
+                                }" unit="{currency}" emphasized="true" />
+                                <ObjectStatus id="status" 
+                                    text="{status}" 
+                                    state="{= ${status} === 'APPROVED' ? 'Success' : ${status} === 'PENDING' ? 'Warning' : 'Error' }" />
+                                <Text id="description" text="{description}" maxLines="2" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+        </content>
     </Page>
 </mvc:View>

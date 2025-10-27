@@ -233,15 +233,21 @@ Open a browser window and navigate to:
 https://vhcala4hci:50001/sap/bc/ui2/flp?sap-client=001&sap-language=EN
 
 Note: The first time you connect using a web browser, you may see a warning about the security certificate.This is because the certificate is self-signed. You can ignore this warning and proceed to the website.
-  
-Login as: DEVELOPER/ABAPtr2023#00
 
-It might take a while to login the first time.
+loLogin gon as **DEVELOPER** using the following credentials:
+
+- User: `DEVELOPER`
+- Password: `ABAPtr2023#00`
+
+It might take a while to login and load the initial view the first time.
 
 ## Deploying the Fiori App
 
-There is a simple Fiori Demo App that can be used for demonstrations in the `fiori` folder.
-To deploy it you can carry out the following:
+In the `fiori` directory, there is a simple Fiori/JavaScript application that can be used to demonstration potential security vulnerabilities that can occur when developing custom applications.
+
+You can carry out a SAST scan of the application as normal.
+
+To deploy the application (for a DAST scan) you can carry out the following:
 
 ```
 cd fiori
@@ -249,7 +255,8 @@ npm run build
 npm run deploy-local
 ```
 
-Then follow the instructions [here](https://blog.tinhtd.info/2021/07/deploy-sapui5-application-into-fiori.html)
+Then follow the instructions given here [here](https://blog.tinhtd.info/2021/07/deploy-sapui5-application-into-fiori.html). You will need to change the names to refer to
+this application.
 
 Note: The `/UI2/SEMOBJ` transactions is available through `/N/UI2/SEMOBJ`.
 

@@ -1,30 +1,37 @@
 <mvc:View controllerName="com.fortify.demo.zui5fiori.controller.App"
     displayBlock="true"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <tnt:ToolPage id="toolPage" xmlns:tnt="sap.tnt" headerTitle="Card Transactions">
-        <tnt:sideContent>
-            <tnt:SideNavigation expanded="true" itemSelect="onSideNavSelect">
-                <tnt:NavigationList>
-                    <tnt:NavigationListItem text="Contact" key="Contact" />
-                    <tnt:NavigationListItem text="CardTxnSummary" key="CardTxnSummary" />
-                    <tnt:NavigationListItem text="CardTxnDetail" key="CardTxnDetail" />
-                    <!-- Add more NavigationListItems for other views/pages here -->
-                </tnt:NavigationList>
-            </tnt:SideNavigation>
-        </tnt:sideContent>
-        <tnt:mainContent>
-            <Bar>
-                <contentLeft>
-                    <Button text="Contact" press="onNavToContact" />
-                    <Button text="CardTxnSummary" press="onNavToCardTxnSummary" />
-                </contentLeft>
-            </Bar>
-            <VBox>
-                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.Contact" visible="{= ${viewModel>/selectedView} === 'Contact' }" />
-                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.CardTxnSummary" visible="{= ${viewModel>/selectedView} === 'CardTxnSummary' }" />
-                <mvc:XMLView viewName="com.fortify.demo.zui5fiori.view.CardTxnDetail" visible="{= ${viewModel>/selectedView} === 'CardTxnDetail' }" />
-            </VBox>
-        </tnt:mainContent>
-    </tnt:ToolPage>
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt">
+    <Shell id="shell">
+        <tnt:ToolPage id="toolPage">
+            <tnt:header>
+                <tnt:ToolHeader id="toolHeader">
+                    <Title id="appTitle" text="Fortify SAP Demo" />
+                    <ToolbarSpacer id="spacerHeader" />
+                    <Button id="homeButton" type="Transparent" icon="sap-icon://home" text="Home" press="onPressHome"/>
+                </tnt:ToolHeader>
+            </tnt:header>
+            <tnt:sideContent>
+                <tnt:SideNavigation id="sideNavigation">
+                    <tnt:NavigationList id="navigationList">
+                        <tnt:NavigationListItem id="navDashboard" text="Dashboard" key="Dashboard" select="onNavigationSelect" icon="sap-icon://home" />
+                        <tnt:NavigationListItem id="navCardTxn" text="Transactions" key="CardTxnSummary" select="onNavigationSelect" icon="sap-icon://sales-order" />
+                        <tnt:NavigationListItem id="navProducts" text="Products" key="Products" select="onNavigationSelect" icon="sap-icon://product" />
+                        <tnt:NavigationListItem id="navCustomers" text="Customers" key="Customers" select="onNavigationSelect" icon="sap-icon://customer" />
+                    </tnt:NavigationList>
+                    <tnt:fixedItem>
+                        <tnt:NavigationList id="navigationListActions">
+                            <tnt:NavigationListItem id="navAddProduct" text="Add Product" key="AddProduct" select="onNavigationSelect" icon="sap-icon://add-product" />
+                            <tnt:NavigationListItem id="navAddCustomer" text="Add Customer" key="AddCustomer" select="onNavigationSelect" icon="sap-icon://add-contact" />
+                            <tnt:NavigationListItem id="navQueryTxn" text="Send Query" key="QueryTxn" select="onNavigationSelect" icon="sap-icon://email" />
+                        </tnt:NavigationList>
+                    </tnt:fixedItem>
+                </tnt:SideNavigation>
+            </tnt:sideContent>
+            <tnt:mainContents>
+                <App id="app" />
+            </tnt:mainContents>
+        </tnt:ToolPage>
+    </Shell>
 </mvc:View>

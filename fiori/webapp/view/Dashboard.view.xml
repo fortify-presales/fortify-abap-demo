@@ -1,0 +1,72 @@
+<mvc:View
+    controllerName="com.fortify.demo.zui5fiori.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Page id="dashboardPage" title="Dashboard">
+        <content>
+            <VBox id="dashboardContainer" class="sapUiMediumMargin">
+                <HBox id="tileContainer" justifyContent="SpaceAround" class="sapUiMediumMarginTop">
+                    <GenericTile id="txnCountTile" class="sapUiTinyMarginBeginEnd" header="Total Transactions" press="onNavToCardTxnSummary">
+                        <TileContent id="txnCountContent">
+                            <NumericContent id="txnCountNumeric" value="{dashboard>/transactionCount}" icon="sap-icon://credit-card" />
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile id="productCountTile" class="sapUiTinyMarginBeginEnd" header="Total Products" press="onNavToProducts">
+                        <TileContent id="productCountContent">
+                            <NumericContent id="productCountNumeric" value="{dashboard>/productCount}" icon="sap-icon://product" />
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile id="customerCountTile" class="sapUiTinyMarginBeginEnd" header="Total Customers" press="onNavToCustomers">
+                        <TileContent id="customerCountContent">
+                            <NumericContent id="customerCountNumeric" value="{dashboard>/customerCount}" icon="sap-icon://customer" />
+                        </TileContent>
+                    </GenericTile>
+                    <GenericTile id="totalAmountTile" class="sapUiTinyMarginBeginEnd" header="Total Amount Spent">
+                        <TileContent id="totalAmountContent">
+                            <NumericContent id="totalAmountNumeric" value="{dashboard>/totalAmount}" scale="USD" icon="sap-icon://money-bills" />
+                        </TileContent>
+                    </GenericTile>
+                </HBox>
+                
+                <Title id="pendingQueriesTitle" text="Pending Queries" level="H2" class="sapUiMediumMarginTop" />
+                <Table id="pendingQueriesTable"
+                    items="{dashboard>/pendingQueries}"
+                    class="sapUiResponsiveMargin"
+                    width="auto"
+                    sticky="ColumnHeaders">
+                    <columns>
+                        <Column id="queryIdColumn" width="10em">
+                            <Text id="queryIdHeader" text="Query ID" />
+                        </Column>
+                        <Column id="queryTxnIdColumn" minScreenWidth="Tablet" demandPopin="true">
+                            <Text id="queryTxnIdHeader" text="Transaction ID" />
+                        </Column>
+                        <Column id="querySummaryColumn" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                            <Text id="querySummaryHeader" text="Summary" />
+                        </Column>
+                        <Column id="queryStatusColumn" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                            <Text id="queryStatusHeader" text="Status" />
+                        </Column>
+                        <Column id="queryDateColumn" minScreenWidth="Desktop" demandPopin="true">
+                            <Text id="queryDateHeader" text="Submitted Date" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem id="queryItem" type="Navigation">
+                            <cells>
+                                <ObjectIdentifier id="queryId" title="{dashboard>query_id}" />
+                                <Text id="queryTxnId" text="{dashboard>txn_id}" />
+                                <Text id="querySummary" text="{dashboard>summary}" maxLines="2" />
+                                <ObjectStatus id="queryStatus" 
+                                    text="{dashboard>status}" 
+                                    state="{= ${dashboard>status} === 'PENDING' ? 'Warning' : ${dashboard>status} === 'IN_PROGRESS' ? 'Information' : 'Success' }" />
+                                <Text id="queryDate" text="{dashboard>submitted_date}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

@@ -20,8 +20,9 @@
         "CardTransaction-manage": {
           "semanticObject": "CardTransaction",
           "action": "manage",
-          "title": "{{CardTransaction-manage.flpTitle}}",
-          "subTitle": "{{CardTransaction-manage.flpSubtitle}}",
+          "title": "Transaction Management",
+          "subTitle": "Manage card transactions and customer queries",
+          "icon": "sap-icon://credit-card",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -30,8 +31,9 @@
         "app-preview": {
           "semanticObject": "app",
           "action": "preview",
-          "title": "App Preview",
-          "subTitle": "Preview the Fiori app",
+          "title": "Fortify SAP Demo",
+          "subTitle": "Security vulnerability demonstration platform",
+          "icon": "sap-icon://shield",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"
@@ -124,9 +126,34 @@
       },
       "routes": [
         {
-          "name": "RouteCardTxnSummary",
+          "name": "RouteDashboard",
           "pattern": "",
+          "target": ["TargetDashboard"]
+        },
+        {
+          "name": "RouteCardTxnSummary",
+          "pattern": "transactions",
           "target": ["TargetCardTxnSummary"]
+        },
+        {
+          "name": "RouteProducts",
+          "pattern": "products",
+          "target": ["TargetProducts"]
+        },
+        {
+          "name": "RouteCustomers",
+          "pattern": "customers",
+          "target": ["TargetCustomers"]
+        },
+        {
+          "name": "RouteAddCustomer",
+          "pattern": "addcustomer",
+          "target": ["TargetAddCustomer"]
+        },
+        {
+          "name": "RouteAddProduct",
+          "pattern": "addproduct",
+          "target": ["TargetAddProduct"]
         },
         {
           "name": "RouteCardTxnDetail",
@@ -134,23 +161,43 @@
           "target": ["TargetCardTxnDetail"]
         },
         {
-          "name": "RouteContact",
-          "pattern": "contact",
-          "target": ["TargetContact"]
+          "name": "RouteQueryTxn",
+          "pattern": "querytxn:?txn_id:",
+          "target": ["TargetQueryTxn"]
         }
       ],
       "targets": {
+        "TargetDashboard": {
+          "id": "Dashboard",
+          "name": "Dashboard"
+        },
         "TargetCardTxnSummary": {
           "id": "CardTxnSummary",
           "name": "CardTxnSummary"
+        },
+        "TargetProducts": {
+          "id": "Products",
+          "name": "Products"
+        },
+        "TargetCustomers": {
+          "id": "Customers",
+          "name": "Customers"
+        },
+        "TargetAddCustomer": {
+          "id": "AddCustomer",
+          "name": "AddCustomer"
+        },
+        "TargetAddProduct": {
+          "id": "AddProduct",
+          "name": "AddProduct"
         },
         "TargetCardTxnDetail": {
           "id": "CardTxnDetail",
           "name": "CardTxnDetail"
         },
-        "TargetContact": {
-          "id": "Contact",
-          "name": "Contact"
+        "TargetQueryTxn": {
+          "id": "QueryTxn",
+          "name": "QueryTxn"
         }
       }
     },

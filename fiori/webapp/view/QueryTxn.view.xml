@@ -1,0 +1,62 @@
+<mvc:View
+    controllerName="com.fortify.demo.zui5fiori.controller.QueryTxn"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:richtexteditor="sap.ui.richtexteditor">
+    <Page id="queryTxnPage" title="Send Query" showNavButton="true" navButtonPress=".onNavBack">
+        <content>
+            <VBox id="queryTxnContainer" class="sapUiMediumMargin">
+                <form:SimpleForm id="queryTxnForm" 
+                    editable="true" 
+                    layout="ResponsiveGridLayout" 
+                    labelSpanXL="3" 
+                    labelSpanL="3" 
+                    labelSpanM="3" 
+                    labelSpanS="12" 
+                    adjustLabelSpan="false" 
+                    emptySpanXL="4" 
+                    emptySpanL="4" 
+                    emptySpanM="4" 
+                    emptySpanS="0" 
+                    columnsXL="1" 
+                    columnsL="1" 
+                    columnsM="1" 
+                    singleContainerFullSize="false">
+                    <form:content>
+                        <Label id="txnIdLabel" text="Transaction ID" required="true" />
+                        <Input id="txnIdField" placeholder="Enter transaction ID..." />
+                        
+                        <Label id="summaryLabel" text="Summary" required="true" />
+                        <Input id="summaryField" placeholder="Enter summary..." />
+                        
+                        <Label id="queryDescriptionLabel" text="Query Details" required="true" />
+                        <richtexteditor:RichTextEditor id="descriptionField" 
+                            editorType="TinyMCE6"
+                            width="100%"
+                            height="200px"
+                            customToolbar="true"
+                            showGroupFont="true"
+                            showGroupLink="true"
+                            showGroupInsert="true"
+                            sanitizeValue="false"
+                            wrapping="true">
+                        </richtexteditor:RichTextEditor>
+                    </form:content>
+                </form:SimpleForm>
+                
+                <HBox id="queryTxnButtonContainer" justifyContent="Center" class="sapUiMediumMarginTop">
+                    <Button id="submitButton" text="Submit Query" type="Emphasized" press=".onSubmitInput" class="sapUiTinyMarginEnd" />
+                    <Button id="cancelButton" text="Cancel" press=".onCancel" />
+                </HBox>
+                
+                <MessageStrip id="queryTxnMessageStrip" 
+                    text="" 
+                    type="None" 
+                    showIcon="true" 
+                    visible="false"
+                    class="sapUiMediumMarginTop" />
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

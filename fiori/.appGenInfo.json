@@ -7,7 +7,7 @@
     "serviceUrl": "N/A",
     "appName": "z_ui5_fiori",
     "appTitle": "Card Transactions",
-    "appDescription": "An SAP Fiori application for Card Transactions",
+    "appDescription": "Fortify SAP Demo - Security vulnerability demonstration",
     "appNamespace": "com.fortify.demo",
     "ui5Theme": "sap_horizon",
     "ui5Version": "1.120.14",

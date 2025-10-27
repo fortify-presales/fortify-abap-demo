@@ -13,6 +13,10 @@ sap.ui.define([
         },
 
         init() {
+            // Register local lib module path
+            var sRootPath = jQuery.sap.getModulePath("com.fortify.demo.zui5fiori");
+            jQuery.sap.registerModulePath("lib", sRootPath + "/lib");
+            
             // call the base component's init function
             UIComponent.prototype.init.apply(this, arguments);
 

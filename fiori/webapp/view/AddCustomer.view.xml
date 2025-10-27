@@ -1,0 +1,43 @@
+<mvc:View
+    controllerName="com.fortify.demo.zui5fiori.controller.AddCustomer"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page id="addCustomerPage" title="Add New Customer" showNavButton="true" navButtonPress=".onNavBack">
+        <content>
+            <VBox id="addCustomerContainer" class="sapUiMediumMargin">
+                <form:SimpleForm id="customerForm" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                    <form:content>
+                        <Label id="customerIdLabel" text="Customer ID" required="true" />
+                        <Input id="customerIdInput" placeholder="Enter customer ID" value="{addCustomer>/customer_id}" />
+                        
+                        <Label id="customerNameLabel" text="Customer Name" required="true" />
+                        <Input id="customerNameInput" placeholder="Enter customer name" value="{addCustomer>/customer_name}" />
+                        
+                        <Label id="customerStatusLabel" text="Status" required="true" />
+                        <ComboBox id="customerStatusCombo" 
+                            placeholder="Select status" 
+                            selectedKey="{addCustomer>/status}">
+                            <core:Item id="statusActive" key="ACTIVE" text="Active" />
+                            <core:Item id="statusInactive" key="INACTIVE" text="Inactive" />
+                            <core:Item id="statusFraudulent" key="FRAUDULENT" text="Fraudulent" />
+                        </ComboBox>
+                    </form:content>
+                </form:SimpleForm>
+                
+                <HBox id="addCustomerButtonContainer" justifyContent="Center" class="sapUiMediumMarginTop">
+                    <Button id="saveBtn" text="Save Customer" type="Emphasized" press=".onSaveCustomer" class="sapUiTinyMarginEnd" />
+                    <Button id="cancelBtn" text="Cancel" press=".onCancel" />
+                </HBox>
+                
+                <MessageStrip id="addCustomerMessageStrip" 
+                    text="" 
+                    type="None" 
+                    showIcon="true" 
+                    visible="false"
+                    class="sapUiMediumMarginTop" />
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

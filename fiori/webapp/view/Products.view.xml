@@ -1,0 +1,63 @@
+<mvc:View
+    controllerName="com.fortify.demo.zui5fiori.controller.Products"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+    <Page id="productsPage" title="Products">
+        <content>
+            <Table id="productsTable"
+                items="{/products}"
+                growing="true"
+                growingThreshold="20"
+                class="sapUiResponsiveMargin"
+                width="auto"
+                sticky="ColumnHeaders,HeaderToolbar">
+                <headerToolbar>
+                    <OverflowToolbar id="productsToolbar" design="Transparent">
+                        <Title id="productsTitle" text="" level="H2"/>
+                        <ToolbarSpacer id="toolbarSpacer"/>
+                        <SearchField id="searchField" width="50%" search=".onSearch" placeholder="Search products..." />
+                        <Button id="addProductBtn" text="Add Product" icon="sap-icon://add" type="Emphasized" press=".onAddProduct" />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column id="productIdColumn" width="12em" demandPopin="false">
+                        <Text id="productIdHeader" text="Product ID" />
+                    </Column>
+                    <Column id="productNameColumn" minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline">
+                        <Text id="productNameHeader" text="Product Name" />
+                    </Column>
+                    <Column id="priceColumn" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+                        <Text id="priceHeader" text="Price" />
+                    </Column>
+                    <Column id="currencyColumn" minScreenWidth="Desktop" demandPopin="true">
+                        <Text id="currencyHeader" text="Currency" />
+                    </Column>
+                    <Column id="quantityColumn" minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+                        <Text id="quantityHeader" text="Total Quantity Sold" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem id="productItem" type="Navigation">
+                        <cells>
+                            <ObjectIdentifier id="productId" title="{product_id}" />
+                            <Text id="productName" text="{product_name}" />
+                            <ObjectNumber id="price" 
+                                number="{
+                                    path: 'price',
+                                    type: 'sap.ui.model.type.Float',
+                                    formatOptions: {
+                                        minFractionDigits: 2,
+                                        maxFractionDigits: 2
+                                    }
+                                }" 
+                                unit="{product_currency}" 
+                                emphasized="true" />
+                            <Text id="currency" text="{product_currency}" />
+                            <ObjectNumber id="quantity" number="{quantity}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

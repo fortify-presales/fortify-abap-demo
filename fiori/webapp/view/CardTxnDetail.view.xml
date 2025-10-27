@@ -1,13 +1,142 @@
 <mvc:View controllerName="com.fortify.demo.zui5fiori.controller.CardTxnDetail"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="cardTxnDetailPage" title="Card Transaction Detail">
-        <ObjectHeader title="{detail>/product_name}" number="{detail>/amount}" numberUnit="{detail>/currency}" />
-        <Text text="{detail>/description}" />
-        <Text text="Transaction ID: {detail>/txn_id}" />
-        <Text text="Product ID: {detail>/product_id}" />
-        <Text text="Card ID: {detail>/card_id}" />
-        <Text text="Cardholder: {detail>/cardholder_name}" />
-        <Button text="Back" press="onNavBack" />
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page id="cardTxnDetailPage" 
+        title="Transaction Details" 
+        showNavButton="true" 
+        navButtonPress=".onNavBack"
+        class="sapUiResponsiveContentPadding">
+        <content>
+            <ObjectHeader id="cardTxnDetailHeader" 
+                title="{detail>/product_name}" 
+                number="{
+                    path: 'detail>/amount',
+                    type: 'sap.ui.model.type.Float',
+                    formatOptions: {
+                        minFractionDigits: 2,
+                        maxFractionDigits: 2
+                    }
+                }" 
+                numberUnit="{detail>/currency}"
+                numberState="{= ${detail>/status} === 'APPROVED' ? 'Success' : ${detail>/status} === 'PENDING' ? 'Warning' : 'Error' }"
+                class="sapUiResponsiveMargin">
+                <attributes>
+                    <ObjectAttribute id="txnStatus" title="Status" text="{detail>/status}" />
+                    <ObjectAttribute id="txnDateAttr" title="Transaction Date" text="{path: 'detail>/txn_date', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/yyyy'}}" />
+                    <ObjectAttribute id="txnTime" title="Transaction Time" text="{path: 'detail>/txn_time', type: 'sap.ui.model.type.Time', formatOptions: {pattern: 'HH:mm:ss'}}" />
+                </attributes>
+                <statuses>
+                    <ObjectStatus id="statusIndicator" 
+                        text="{detail>/status}" 
+                        state="{= ${detail>/status} === 'APPROVED' ? 'Success' : ${detail>/status} === 'PENDING' ? 'Warning' : 'Error' }" />
+                </statuses>
+            </ObjectHeader>
+            
+            <IconTabBar id="detailTabs" class="sapUiResponsiveContentPadding">
+                <items>
+                    <IconTabFilter id="generalTab" text="General" icon="sap-icon://hint">
+                        <f:SimpleForm id="generalForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            adjustLabelSpan="false"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1"
+                            singleContainerFullSize="false"
+                            class="sapUiResponsiveMargin">
+                            <f:content>
+                                <core:Title id="txnInfoTitle" text="Transaction Information" />
+                                <Label id="txnIdLabel" text="Transaction ID" />
+                                <Text id="cardTxnDetailTxnId" text="{detail>/txn_id}" />
+                                
+                                <Label id="descriptionLabel" text="Description" />
+                                <Text id="cardTxnDetailDescription" text="{detail>/description}" />
+                                
+                                <Label id="amountLabel" text="Amount" />
+                                <ObjectNumber id="amountDisplay" 
+                                    number="{
+                                        path: 'detail>/amount',
+                                        type: 'sap.ui.model.type.Float',
+                                        formatOptions: {
+                                            minFractionDigits: 2,
+                                            maxFractionDigits: 2
+                                        }
+                                    }" 
+                                    unit="{detail>/currency}" 
+                                    emphasized="true" />
+                                
+                                <Label id="quantityLabel" text="Quantity" />
+                                <Text id="quantityText" text="{detail>/quantity}" />
+                                
+                                <core:Title id="productInfoTitle" text="Product Information" />
+                                <Label id="detailProductIdLabel" text="Product ID" />
+                                <Text id="cardTxnDetailProductId" text="{detail>/product_id}" />
+                                
+                                <Label id="productNameLabel" text="Product Name" />
+                                <Text id="productNameText" text="{detail>/product_name}" />
+                                
+                                <Label id="priceLabel" text="Unit Price" />
+                                <ObjectNumber id="priceDisplay" 
+                                    number="{
+                                        path: 'detail>/price',
+                                        type: 'sap.ui.model.type.Float',
+                                        formatOptions: {
+                                            minFractionDigits: 2,
+                                            maxFractionDigits: 2
+                                        }
+                                    }" 
+                                    unit="{detail>/product_currency}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                    
+                    <IconTabFilter id="cardTab" text="Card Details" icon="sap-icon://credit-card">
+                        <f:SimpleForm id="cardForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            adjustLabelSpan="false"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="1"
+                            columnsL="1"
+                            columnsM="1"
+                            singleContainerFullSize="false"
+                            class="sapUiResponsiveMargin">
+                            <f:content>
+                                <core:Title id="cardInfoTitle" text="Card Information" />
+                                <Label id="cardIdLabel" text="Card ID" />
+                                <Text id="cardTxnDetailCardId" text="{detail>/card_id}" />
+                                
+                                <Label id="cardholderLabel" text="Cardholder Name" />
+                                <Text id="cardTxnDetailCardholder" text="{detail>/cardholder_name}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <footer>
+            <OverflowToolbar id="detailFooter">
+                <ToolbarSpacer id="footerSpacer"/>
+                <Button id="sendQueryBtn" text="Send Query" press=".onSendQuery" type="Default" icon="sap-icon://email" />
+                <Button id="cardTxnDetailBackButton" text="Back to List" press=".onNavBack" type="Emphasized" icon="sap-icon://nav-back" />
+            </OverflowToolbar>
+        </footer>
     </Page>
 </mvc:View>

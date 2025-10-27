@@ -7,5 +7,7 @@
     "conn_password": "ABAPtr2023#00",
     "abap_package": "$TMP",
     "abap_bsp": "ZCARD_TXN_APP",
-    "abap_bsp_text": "Card Transactions App"
+    "abap_bsp_text": "Card Transactions App",
+    "abap_transport_use_locked": false,
+    "abap_transport_use_user_match": false
 }

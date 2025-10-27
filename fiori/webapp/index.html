@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Transactions</title>
-    <style>
-        html, body, body > div, #container, #container-uiarea {
-            height: 100%;
-        }
-    </style>
+    
     <script
-    id="sap-ui-bootstrap"
-    src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        src="/sap/public/bc/ui5_ui5/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compat-version="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-preload="off"
         data-sap-ui-resource-roots='{
             "com.fortify.demo.zui5fiori": "./"
         }'
         data-sap-ui-on-init="module:sap/ui/core/ComponentSupport"
-        data-sap-ui-compat-version="edge"
-        data-sap-ui-async="true"
-        data-sap-ui-frame-options="trusted"
     ></script>
 </head>
-<body class="sapUiBody sapUiSizeCompact" id="content">
-    <!-- The preview shell will inject the component automatically. -->
+<body class="sapUiBody">
+    <div
+        data-sap-ui-component
+        data-name="com.fortify.demo.zui5fiori"
+        data-id="container"
+        data-settings='{"id" : "com.fortify.demo.zui5fiori"}'
+        style="height: 100%"
+    ></div>
 </body>
 </html>

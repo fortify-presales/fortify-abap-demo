@@ -1,11 +1,13 @@
 {
   "name": "z_ui5_fiori",
   "version": "0.0.1",
-  "description": "An SAP Fiori application for Card Transactions",
+  "description": "Fortify SAP Demo - Security vulnerability demonstration",
   "keywords": [
     "ui5",
     "openui5",
-    "sapui5"
+    "sapui5",
+    "fiori",
+    "Security"
   ],
   "main": "webapp/index.html",
   "devDependencies": {
@@ -30,5 +32,8 @@
     "start-mock": "fiori run --config ./ui5-mock.yaml --open \"test/flp.html#app-preview\"",
     "deploy-local": "npx nwabap upload"
   },
-  "sapuxLayer": "CUSTOMER_BASE"
+  "sapuxLayer": "CUSTOMER_BASE",
+  "dependencies": {
+    "currency.js": "^2.0.4"
+  }
 }

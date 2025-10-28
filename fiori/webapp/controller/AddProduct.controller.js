@@ -1,47 +1,22 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
-    "sap/m/MessageToast",
-    "sap/ui/richtexteditor/RichTextEditor"
-], function(Controller, JSONModel, MessageToast, RichTextEditor) {
+    "sap/m/MessageToast"
+], function(Controller, JSONModel, MessageToast) {
     "use strict";
 
     return Controller.extend("com.fortify.demo.zui5fiori.controller.AddProduct", {
         onInit: function() {
-            var oProductForm = this.byId("productForm");
-            if (oProductForm) {
-                // Create the label
-                var oDescLabel = new sap.m.Label(this.createId("productDescLabel"), {
-                    text: "Description",
-                    required: true
-                });
-
-                // Create the RichTextEditor
-                var oRichTextEditor = new RichTextEditor({
-                    width: "100%",
-                    height: "200px",
-                    editorType: "TinyMCE6",
-                    value: "",
-                    customToolbar: true,
-                    showGroupFont: true,
-                    showGroupLink: true,
-                    showGroupInsert: true,
-                    sanitizeValue: false,
-                    wrapping: true
-                });
-
-                // TODO: fix description binding to model
-                //oRichTextEditor.bindValue("addProduct>/description");
-
-                // TODO: fix insertion point
-                // Find the index to insert after Product Name Input
-                var oProductNameInput = this.byId("productNameInput");
-                var iIndex = oProductForm.indexOfAggregation("content", oProductNameInput);
-
-                // Insert label and editor after Product Name Input
-                oProductForm.insertAggregation("content", oDescLabel, iIndex + 1);
-                oProductForm.insertAggregation("content", oRichTextEditor, iIndex + 2);
-            }
+            console.log("AddProduct controller initialized");
+            
+            // Create a model to hold form data
+            var oFormModel = new JSONModel({
+                product_id: "",
+                product_name: "",
+                description: "",
+                price: ""
+            });
+            this.getView().setModel(oFormModel, "addProduct");
         },
 
         onNavBack: function() {

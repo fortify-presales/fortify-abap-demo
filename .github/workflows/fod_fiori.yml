@@ -94,7 +94,7 @@ jobs:
     needs: [ Env-Prepare, Build-And-Unit-Test ]
     defaults:
       run:
-        working-directory: ./fiori
+        working-directory: fiori
     env: 
       FOD_FIORI_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_FIORI_RELEASE }}
       FOD_FIORI_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_FIORI_PARENT_RELEASE }}
@@ -108,7 +108,7 @@ jobs:
         uses: fortify/github-action@v1
         with:
           sast-scan: true
-          debricked-sca-scan: false # we could do this separately using fcli
+          debricked-sca-scan: true # we could do this separately using fcli
         env:
           FOD_URL: ${{ vars.FOD_URL }}
           #FOD_TENANT: ${{secrets.FOD_TENANT}}
@@ -124,7 +124,7 @@ jobs:
           SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=JS/TS/HTML', env.FOD_FIORI_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
-          #PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files"
+          PACKAGE_EXTRA_OPTS: -exclude "src/**/*" -exclude "**/webapp/test/**" -exclude "**/*.md" -exclude "**/docs/**" -exclude "**/files/**" -exclude "**/media/**" -exclude ".abapgit.xml"
           # FOD_SAST_SCAN_EXTRA_OPTS:
           # DO_WAIT: true
           DO_POLICY_CHECK: true # we could do this later after SCA and DAST scan

@@ -15,19 +15,7 @@
                         <Label id="productNameLabel" text="Product Name" required="true" />
                         <Input id="productNameInput" placeholder="Enter product name" value="{addProduct>/product_name}" />
                         
-                        <Label id="productDescLabel" text="Description" required="true" />
-                        <richtexteditor:RichTextEditor id="productDescEditor" 
-                            value="{addProduct>/description}" 
-                            editorType="TinyMCE6"
-                            width="100%"
-                            height="200px"
-                            customToolbar="true"
-                            showGroupFont="true"
-                            showGroupLink="true"
-                            showGroupInsert="true"
-                            sanitizeValue="false"
-                            wrapping="true">
-                        </richtexteditor:RichTextEditor>
+                        <!-- Product Description with RichTextEditor -->
                         
                         <Label id="productPriceLabel" text="Price (USD)" required="true" />
                         <Input id="productPriceInput" 

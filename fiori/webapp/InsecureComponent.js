@@ -9,11 +9,18 @@ sap.ui.define([
         },
         renderer: {
             render: function (oRm, oControl) {
-                oRm.write('<div>' + oControl.getId() + ':' + oControl.getFoo() + '</div>')
+                // Cross-Site Scripting: SAPUI5 Control
+                oRm.write("<div>" + oControl.getId() + ":" + oControl.getFoo() + "</div>"); // get[A-Z][A-z]+
+                // Cross-Site Scripting: SAPUI5 Control
+                oRm.writeEscaped("<div><p>Escaped: " + oControl.getId() + ":" + oControl.getFoo() + "</p></div>");
+                try {
+                    // Dynamic Code Evaluation: Code Injection
+                    eval(oControl.getFoo())
+                } catch { }
             }
         },
         init: function (data) {
-            var result = eval(data.foo); // Insecure use of eval
+            var result = eval(data.foo); // Dynamic Code Evaluation: Code Injection
             this.setFoo(result);
             console.log(result);
         }

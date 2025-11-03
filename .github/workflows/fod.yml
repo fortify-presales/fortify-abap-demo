@@ -16,15 +16,14 @@
 
 name: Fortify Security Scan
 permissions:
-  contents: write
-  pull-requests: write
-  repository-projects: write
   # required for all workflows
   security-events: write
   # required to fetch internal or private CodeQL packs
   packages: read
   # only required for workflows in private repositories
   actions: read
+  # required to create PR comments, new files etc
+  contents: write
 
 on:
   # Triggers the workflow on push or pull request events but only for the main or develop branches

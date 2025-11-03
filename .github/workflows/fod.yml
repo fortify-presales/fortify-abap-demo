@@ -42,6 +42,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
+      runBUT:
+        description: 'Carry out Build and Unit Testing'
+        required: false
+        default: 'true'  
       runFoDSASTScan:
         description: 'Carry out SAST scan using Fortify on Demand'
         required: false
@@ -78,14 +82,12 @@ jobs:
   Build-And-Unit-Test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runBUT == 'true') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: abaplint
         uses: abaplint/actions-abaplint@main
-        # GITHUB_TOKEN in forked repositories is read-only
-        # https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
-        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

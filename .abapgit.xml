@@ -15,7 +15,6 @@
     <item>/abaplint.json</item>
     <item>/azure-pipelines.yml</item>
     <item>/docs/</item>
-    <item>/ppt/</item>
     <item>/software</item>
     <item>/SAP_Extractor/</item>
    </IGNORE>

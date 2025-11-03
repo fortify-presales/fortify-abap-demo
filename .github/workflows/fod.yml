@@ -14,7 +14,7 @@
 #   It is recommended to create credentials with 'Security Lead' Role selected.
 #   "Automated Audit preference" should be configured for the release's Static Scan Settings.
 
-name: Fortify Security Scan (Fiori)
+name: Fortify Security Scan (ABAP)
 permissions:
     # required for all workflows
     security-events: write
@@ -29,13 +29,12 @@ on:
   push:
     paths-ignore:
       - '.github/**/**'
-      - 'src/**/*'
+      - 'fiori/**/*'
       - 'docs/**'
       - 'files/**'
       - 'media/**'
       - '*.md'
       - 'LICENSE'
-      - '.abapgit.xml'
     #branches-ignore:
     #  - main
     #  - develop
@@ -62,8 +61,8 @@ jobs:
   Env-Prepare:
     runs-on: ubuntu-latest
     outputs:
-      FOD_FIORI_RELEASE: ${{ steps.commands.outputs.FOD_FIORI_RELEASE }}
-      FOD_FIORI_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_FIORI_PARENT_RELEASE }}
+      FOD_ABAP_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_RELEASE }}
+      FOD_ABAP_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,12 +71,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Running in a pull request pipeline ..."
-            echo "FOD_FIORI_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}_fiori" >> $GITHUB_OUTPUT
-            echo "FOD_FIORI_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}_fiori" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}_abap" >> $GITHUB_OUTPUT
           else
             echo "Running in a branch pipeline ..."
-            echo "FOD_FIORI_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}_fiori" >> $GITHUB_OUTPUT
-            echo "FOD_FIORI_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}_fiori" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}_abap" >> $GITHUB_OUTPUT
           fi
 
   Build-And-Unit-Test:
@@ -86,18 +85,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-    # TBD
+      - name: abaplint
+        uses: abaplint/actions-abaplint@main
+        # GITHUB_TOKEN in forked repositories is read-only
+        # https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   FoD-SAST-Scan:
     runs-on: ubuntu-latest
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
     needs: [ Env-Prepare, Build-And-Unit-Test ]
-    defaults:
-      run:
-        working-directory: fiori
     env: 
-      FOD_FIORI_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_FIORI_RELEASE }}
-      FOD_FIORI_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_FIORI_PARENT_RELEASE }}
+      FOD_ABAP_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_RELEASE }}
+      FOD_ABAP_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -108,7 +110,7 @@ jobs:
         uses: fortify/github-action@v1
         with:
           sast-scan: true
-          debricked-sca-scan: true # we could do this separately using fcli
+          debricked-sca-scan: false # we could do this separately using fcli
         env:
           FOD_URL: ${{ vars.FOD_URL }}
           #FOD_TENANT: ${{secrets.FOD_TENANT}}
@@ -117,14 +119,14 @@ jobs:
           FOD_CLIENT_ID: ${{secrets.FOD_CLIENT_ID}}
           FOD_CLIENT_SECRET: ${{secrets.FOD_CLIENT_SECRET}}
           # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
-          #FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
-          FOD_RELEASE: ${{ env.FOD_FIORI_RELEASE }}
+          # FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
+          FOD_RELEASE: ${{ env.FOD_ABAP_RELEASE }}
           # DO_SETUP: true
           # SETUP_ACTION: https://scm.my.org/shared-repos/fcli-actions/setup.yaml
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=JS/TS/HTML', env.FOD_FIORI_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
+          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_ABAP_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
-          PACKAGE_EXTRA_OPTS: -exclude "src/**/*" -exclude "**/webapp/test/**" -exclude "**/*.md" -exclude "**/docs/**" -exclude "**/files/**" -exclude "**/media/**" -exclude ".abapgit.xml"
+          PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files" -exclude "fiori"
           # FOD_SAST_SCAN_EXTRA_OPTS:
           # DO_WAIT: true
           DO_POLICY_CHECK: true # we could do this later after SCA and DAST scan

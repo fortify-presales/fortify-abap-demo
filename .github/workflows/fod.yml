@@ -94,7 +94,8 @@ jobs:
       - name: abaplint
         uses: abaplint/actions-abaplint@main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # use a PAT if you need to access private repos
 
   FoD-SAST-Scan:
     runs-on: ubuntu-latest

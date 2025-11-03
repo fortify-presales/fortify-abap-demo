@@ -3,24 +3,25 @@
 @AbapCatalog.preserveKey: true
 @EndUserText.label: 'Products, Cards and Transactions'
 @Metadata.ignorePropagatedAnnotations: true
-@OData.publish: true
-define view zv_prod_card_txn as select from ztxn_product
-  inner join zproduct           on ztxn_product.product_id = zproduct.product_id
-  inner join zcard_txn  on ztxn_product.txn_id    = zcard_txn.txn_id
-  inner join zpayment_card      on zcard_txn.card_id = zpayment_card.card_id
+//the below is only supported in on-premise systems
+//@OData.publish: true
+define view zv_prod_card_txn as select from zfy_product_txn
+  inner join zfy_product           on zfy_product_txn.product_id = zfy_product.product_id
+  inner join zfy_card_txn  on zfy_product_txn.txn_id    = zfy_card_txn.txn_id
+  inner join zfy_payment_card      on zfy_card_txn.card_id = zfy_payment_card.card_id
 {
-  key ztxn_product.txn_id,
-  key zproduct.product_id,
-  key zpayment_card.card_id,
-  zcard_txn.txn_date,
-  zcard_txn.txn_time,
-  zcard_txn.amount,
-  zcard_txn.currency,
-  zcard_txn.status,
-  zcard_txn.description,
-  zproduct.name      as product_name,
-  zproduct.price,
-  zproduct.currency  as product_currency,
-  ztxn_product.quantity,
-  zpayment_card.cardholder_name
+  key zfy_product_txn.txn_id,
+  key zfy_product.product_id,
+  key zfy_payment_card.card_id,
+  zfy_card_txn.txn_date,
+  zfy_card_txn.txn_time,
+  zfy_card_txn.amount,
+  zfy_card_txn.currency,
+  zfy_card_txn.status,
+  zfy_card_txn.description,
+  zfy_product.name      as product_name,
+  zfy_product.price,
+  zfy_product.currency  as product_currency,
+  zfy_product_txn.quantity,
+  zfy_payment_card.cardholder_name
 }

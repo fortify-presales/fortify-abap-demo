@@ -91,11 +91,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: abaplint
-        uses: abaplint/actions-abaplint@main
-        env:
-          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # use a PAT if you need to access private repos
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Run abaplint
+        run: |
+          npm -g install @abaplint/cli
+          abaplint
 
   FoD-SAST-Scan:
     runs-on: ubuntu-latest

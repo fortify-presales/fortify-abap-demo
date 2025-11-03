@@ -14,7 +14,7 @@
 #   It is recommended to create credentials with 'Security Lead' Role selected.
 #   "Automated Audit preference" should be configured for the release's Static Scan Settings.
 
-name: Fortify Security Scan (ABAP)
+name: Fortify Security Scan
 permissions:
     # required for all workflows
     security-events: write
@@ -29,8 +29,8 @@ on:
   push:
     paths-ignore:
       - '.github/**/**'
-      - 'fiori/**/*'
       - 'docs/**'
+      - 'etc/**'
       - 'files/**'
       - 'media/**'
       - '*.md'
@@ -53,7 +53,7 @@ on:
 
 # Global environment variables
 env:
-  DEFAULT_APP_NAME: "FortifySAPDemo"
+  DEFAULT_APP_NAME: "SAP_ABAP_Demo"
   DEFAULT_PARENT_RELEASE_NAME: "main"
 
 jobs:
@@ -61,8 +61,8 @@ jobs:
   Env-Prepare:
     runs-on: ubuntu-latest
     outputs:
-      FOD_ABAP_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_RELEASE }}
-      FOD_ABAP_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_ABAP_PARENT_RELEASE }}
+      FOD_RELEASE: ${{ steps.commands.outputs.FOD_RELEASE }}
+      FOD_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,17 +71,21 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Running in a pull request pipeline ..."
-            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}_abap" >> $GITHUB_OUTPUT
-            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}" >> $GITHUB_OUTPUT
+            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}" >> $GITHUB_OUTPUT
           else
             echo "Running in a branch pipeline ..."
-            echo "FOD_ABAP_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}_abap" >> $GITHUB_OUTPUT
-            echo "FOD_ABAP_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}_abap" >> $GITHUB_OUTPUT
+            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}" >> $GITHUB_OUTPUT
           fi
 
   Build-And-Unit-Test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,8 +102,8 @@ jobs:
     if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
     needs: [ Env-Prepare, Build-And-Unit-Test ]
     env: 
-      FOD_ABAP_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_RELEASE }}
-      FOD_ABAP_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_ABAP_PARENT_RELEASE }}
+      FOD_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_RELEASE }}
+      FOD_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_PARENT_RELEASE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -120,13 +124,13 @@ jobs:
           FOD_CLIENT_SECRET: ${{secrets.FOD_CLIENT_SECRET}}
           # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
           # FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
-          FOD_RELEASE: ${{ env.FOD_ABAP_RELEASE }}
+          FOD_RELEASE: ${{ env.FOD_RELEASE }}
           # DO_SETUP: true
           # SETUP_ACTION: https://scm.my.org/shared-repos/fcli-actions/setup.yaml
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_ABAP_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
+          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
-          PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files" -exclude "fiori"
+          PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files" 
           # FOD_SAST_SCAN_EXTRA_OPTS:
           # DO_WAIT: true
           DO_POLICY_CHECK: true # we could do this later after SCA and DAST scan

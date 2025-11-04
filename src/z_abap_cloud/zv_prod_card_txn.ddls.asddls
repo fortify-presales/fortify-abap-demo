@@ -1,11 +1,7 @@
-@AbapCatalog.sqlViewName: 'ZV_PRODCARDTXN'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
 @EndUserText.label: 'Products, Cards and Transactions'
-@Metadata.ignorePropagatedAnnotations: true
-//the below is only supported in on-premise systems
-//@OData.publish: true
-define view zv_prod_card_txn as select from zfy_product_txn
+define view entity zv_prod_card_txn as select from zfy_product_txn
   inner join zfy_product           on zfy_product_txn.product_id = zfy_product.product_id
   inner join zfy_card_txn  on zfy_product_txn.txn_id    = zfy_card_txn.txn_id
   inner join zfy_payment_card      on zfy_card_txn.card_id = zfy_payment_card.card_id

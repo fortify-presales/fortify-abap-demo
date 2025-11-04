@@ -6,7 +6,7 @@
     <DDLNAME>ZV_PROD_CARD_TXN</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>Products, Cards and Transactions</DDTEXT>
-    <SOURCE_TYPE>V</SOURCE_TYPE>
+    <SOURCE_TYPE>W</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

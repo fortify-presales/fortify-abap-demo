@@ -2,13 +2,15 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define root view entity ZI_Pet
   as select from zpet
-  association [0..1] to ZI_PetCategory as _Category on zpet.id = _Category.pet_id
-  association [0..*] to ZI_PetPhotoUrl as _PhotoUrls on zpet.id = _PhotoUrls.pet_id
-  association [0..*] to ZI_PetTag as _Tags on zpet.id = _Tags.pet_id
+  composition [0..*] of ZI_PetCategory as _Category
+  composition [0..*] of ZI_PetPhotoUrl as _PhotoUrls
+  composition [0..*] of ZI_PetTag as _Tags
 {
   key id,
       name,
       status,
+      last_changed_at,
+      local_last_changed_at,
       _Category,
       _PhotoUrls,
       _Tags

@@ -3,13 +3,10 @@
 {
 "FROM":
 [
-"ZPET_CATEGORY"
+"ZR_TRAVEL"
 ],
 "ASSOCIATED":
-[
-"ZI_PET",
-"ZI_PETCATEGORYTYPE"
-],
+[],
 "BASE":
 [],
 "ANNO_REF":

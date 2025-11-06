@@ -1,0 +1,101 @@
+managed implementation in class zbp_i_pet unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_Pet alias Pet
+persistent table zpet
+draft table zpet_d
+lock master total etag last_changed_at
+etag master local_last_changed_at
+authorization master ( instance )
+{
+  create;
+  update;
+  delete;
+
+  association _Category { create; with draft; }
+  association _PhotoUrls { create; with draft; }
+  association _Tags { create; with draft; }
+
+  field ( readonly ) id;
+  field ( mandatory ) name, status;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for zpet
+  {
+    id = id;
+    name = name;
+    status = status;
+    last_changed_at = last_changed_at;
+    local_last_changed_at = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_PetCategory alias PetCategory
+persistent table zpet_category
+draft table zpet_category_d
+lock dependent by _Pet
+authorization dependent by _Pet
+{
+  update;
+  delete;
+
+  association _Pet { with draft; }
+
+  field ( readonly ) pet_id;
+  field ( mandatory ) cat_id;
+
+  mapping for zpet_category
+  {
+    pet_id = pet_id;
+    cat_id = cat_id;
+  }
+}
+
+define behavior for ZI_PetPhotoUrl alias PetPhotoUrl
+persistent table zpet_photo_url
+draft table zpet_photo_url_d
+lock dependent by _Pet
+authorization dependent by _Pet
+{
+  update;
+  delete;
+
+  association _Pet { with draft; }
+
+  field ( readonly ) pet_id;
+  field ( mandatory ) photourl;
+
+  mapping for zpet_photo_url
+  {
+    pet_id = pet_id;
+    photo_id = photo_id;
+    photourl = photourl;
+  }
+}
+
+define behavior for ZI_PetTag alias PetTag
+persistent table zpet_tag
+draft table zpet_tag_d
+lock dependent by _Pet
+authorization dependent by _Pet
+{
+  update;
+  delete;
+
+  association _Pet { with draft; }
+
+  field ( readonly ) pet_id;
+  field ( mandatory ) tag_id;
+
+  mapping for zpet_tag
+  {
+    pet_id = pet_id;
+    tag_id = tag_id;
+  }
+}

@@ -1,0 +1,15 @@
+CLASS zcl_bulk_ops DEFINITION
+  PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS clear_all.
+ENDCLASS.
+
+CLASS zcl_bulk_ops IMPLEMENTATION.
+
+  METHOD clear_all.
+    " ❌ DELETE without WHERE or AUTHORITY-CHECK
+    DELETE FROM zfy_travel.
+  ENDMETHOD.
+
+ENDCLASS.
+

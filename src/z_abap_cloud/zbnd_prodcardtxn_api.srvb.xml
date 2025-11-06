@@ -7,7 +7,7 @@
      <NAME>ZBND_PRODCARDTXN_API</NAME>
      <TYPE>SRVB/SVB</TYPE>
      <DESCRIPTION>RAP Service Web API Binding for Card Transactions</DESCRIPTION>
-     <LANGUAGE>EN</LANGUAGE>
+     <RESPONSIBLE>DEVELOPER</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
      <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
     </METADATA>
@@ -24,27 +24,18 @@
        <SERVICE_CONTENT>
         <item>
          <SERVICE_VERSION>0001</SERVICE_VERSION>
-         <RELEASE_STATE>RELEASED</RELEASE_STATE>
+         <RELEASE_STATE>NOT_RELEASED</RELEASE_STATE>
          <SRVD_REF>
           <URI>/sap/bc/adt/ddic/srvd/sources/zsrv_prodcardtxn</URI>
           <TYPE>SRVD/SRV</TYPE>
           <NAME>ZSRV_PRODCARDTXN</NAME>
          </SRVD_REF>
-         <BIND_TYPE_DATA>
-          <CONTENT>
-           <ENCODING>base64</ENCODING>
-          </CONTENT>
-         </BIND_TYPE_DATA>
         </item>
        </SERVICE_CONTENT>
       </item>
      </SERVICES>
     </CONTENT>
-    <CONTRACT>C2</CONTRACT>
     <RELEASE_SUPPORTED>true</RELEASE_SUPPORTED>
-    <PUBLISHED>true</PUBLISHED>
-    <BINDING_CREATED>true</BINDING_CREATED>
-    <ALLOWED_ACTION>NONE</ALLOWED_ACTION>
    </SRVB>
   </asx:values>
  </asx:abap>

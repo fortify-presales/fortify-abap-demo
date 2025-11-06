@@ -17,6 +17,7 @@
     <item>/docs/</item>
     <item>/software</item>
     <item>/SAP_Extractor/</item>
+    <item>/src/z_abap_classic/abaplint.json</item>
    </IGNORE>
   </DATA>
  </asx:values>

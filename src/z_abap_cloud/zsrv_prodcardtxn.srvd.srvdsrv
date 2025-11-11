@@ -1,4 +1,0 @@
-@EndUserText.label: 'RAP Service for Card Transactions'
-define service ZSRV_PRODCARDTXN {
-  expose zv_prod_card_txn;
-}

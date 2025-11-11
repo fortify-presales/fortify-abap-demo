@@ -13,12 +13,12 @@ ENDCLASS.
 CLASS zcl_bulk_ops_insecure IMPLEMENTATION.
 
   METHOD delete_all.
-    " Insecure: wipes the entire table
+    " Triggers ABAP-RAP-S006: Bulk Operation Without Restriction
     DELETE FROM zfy_travel.
   ENDMETHOD.
 
   METHOD bulk_update_no_where.
-    " Insecure: updates every row
+    " Triggers ABAP-RAP-S006: Bulk Operation Without Restriction
     UPDATE zfy_travel SET internal_comment = 'Processed'.
   ENDMETHOD.
 

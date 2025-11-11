@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_BULK_OPS</CLSNAME>
+    <CLSNAME>ZBP_TRAVEL_HANDLER_INSECURE</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Bulk Operations Class</DESCRIPT>
+    <DESCRIPT>Travel Behavior Handler</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

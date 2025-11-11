@@ -1,4 +1,6 @@
 @EndUserText.label: 'Travel CDS View Entity (Model)'
+// This demonstrates authorization check disabled
+@AccessControl.authorizationCheck: #NOT_REQUIRED
 define root view entity ZR_Travel
   as select from zfy_travel
 {
@@ -7,7 +9,7 @@ define root view entity ZR_Travel
       customer_id as CustomerID,
       begin_date as BeginDate,
       end_date as EndDate,
-      internal_comment as InternalComment,     // ❌ sensitive fields (no @UI.hidden)
+      internal_comment as InternalComment,     // this demonstrates sensitive field exposure (no @UI.hidden)
       createdby as CreatedBy,
       createdat as CreatedAt,
       lastchangedby as LastChangedBy,

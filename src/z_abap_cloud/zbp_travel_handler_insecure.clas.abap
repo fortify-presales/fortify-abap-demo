@@ -2,15 +2,15 @@ CLASS zbp_travel_handler_insecure DEFINITION
   PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
     METHODS:
-      create,          " triggers RAP-S001 (no AUTHORITY-CHECK)
-      delete_all,      " triggers RAP-S006 (bulk DML)
+      create,
+      delete_all,
       create_secure.   " secure example
 ENDCLASS.
 
 CLASS zbp_travel_handler_insecure IMPLEMENTATION.
 
   METHOD create.
-    " ❌ No AUTHORITY-CHECK before DML
+    " No AUTHORITY-CHECK before DML
     DATA(ls_travel) = VALUE zfy_travel(
       travel_id        = 'T100'
       agency_id        = 'A1'
@@ -20,15 +20,13 @@ CLASS zbp_travel_handler_insecure IMPLEMENTATION.
       internal_comment = 'Unsecured insert'
       createdby       = sy-uname
     ).
-
-    INSERT zfy_travel FROM ls_travel.  " ← triggers RAP-S001
+    INSERT zfy_travel FROM ls_travel.
   ENDMETHOD.
 
 
   METHOD delete_all.
-    " ❌ Mass DELETE without WHERE or AUTHORITY-CHECK
-    " Triggers ABAP-RAP-S006: Bulk Operation Without Restriction
-    DELETE FROM zfy_travel.             " ← triggers RAP-S006
+    " Mass DELETE without WHERE or AUTHORITY-CHECK
+    DELETE FROM zfy_travel.
   ENDMETHOD.
 
 

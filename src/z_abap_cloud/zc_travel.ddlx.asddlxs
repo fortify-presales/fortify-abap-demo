@@ -68,6 +68,7 @@ annotate view ZC_Travel with
   } ]
   EndDate;
   
+  // this demonstrates sensitive field exposure (no @UI.hidden)
   @UI.lineItem: [ {
     position: 60 , 
     importance: #MEDIUM, 

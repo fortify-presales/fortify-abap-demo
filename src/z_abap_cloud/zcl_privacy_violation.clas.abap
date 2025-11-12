@@ -36,6 +36,18 @@ CLASS zcl_privacy_violation IMPLEMENTATION.
     out->write( |Retrieved UID: { ls_creds-uid }| ).
     out->write( |Retrieved Password: { ls_creds-password }| ).
 
+    " Example 4: Using MESSAGE to display credentials (security issue)
+    " Not supported in ABAP for Cloud, but shown here for demonstration
+    MESSAGE |UID: { ls_creds-uid }, Password: { ls_creds-password }| TYPE 'I'.
+
+    " Vulnerable: discloses credentials through the message text
+    " Supported in ABAP for Cloud
+    MESSAGE i014(sabapdemos)
+            WITH ls_creds-uid ls_creds-password
+            INTO DATA(msg).
+    out->write( msg ). " or written to app logs/trace
+
+
   ENDMETHOD.
 
   METHOD setup_default_credentials.

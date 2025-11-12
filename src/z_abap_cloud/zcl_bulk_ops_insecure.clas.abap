@@ -3,22 +3,22 @@
 CLASS zcl_bulk_ops_insecure DEFINITION
   PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
-    METHODS delete_all.                      " DELETE without WHERE
-    METHODS bulk_update_no_where.            " UPDATE without WHERE
-    METHODS delete_with_dynamic_where        " Dynamic WHERE from untrusted input
+    METHODS delete_all.
+    METHODS bulk_update_no_where.
+    METHODS delete_with_dynamic_where
       IMPORTING VALUE(iv_filter) TYPE string.
-    METHODS do_implicit_commit.              " Implicit COMMIT in library code
+    METHODS do_implicit_commit.
 ENDCLASS.
 
 CLASS zcl_bulk_ops_insecure IMPLEMENTATION.
 
   METHOD delete_all.
-    " Triggers ABAP-RAP-S006: Bulk Operation Without Restriction
+    " Bulk Operation Without Restriction
     DELETE FROM zfy_travel.
   ENDMETHOD.
 
   METHOD bulk_update_no_where.
-    " Triggers ABAP-RAP-S006: Bulk Operation Without Restriction
+    " Bulk Operation Without Restriction
     UPDATE zfy_travel SET internal_comment = 'Processed'.
   ENDMETHOD.
 

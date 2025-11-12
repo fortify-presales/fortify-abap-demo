@@ -9,7 +9,7 @@ define root view entity ZR_Travel
       customer_id as CustomerID,
       begin_date as BeginDate,
       end_date as EndDate,
-      internal_comment as InternalComment,     // this demonstrates sensitive field exposure (no @UI.hidden)
+      internal_comment as InternalComment,
       createdby as CreatedBy,
       createdat as CreatedAt,
       lastchangedby as LastChangedBy,

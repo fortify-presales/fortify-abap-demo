@@ -10,7 +10,7 @@ define root view entity ZC_Travel
   CustomerID,
   BeginDate,
   EndDate,
-  InternalComment,
+  InternalComment, // this demonstrates sensitive field exposure (no @UI.hidden)
   CreatedBy,
   CreatedAt,
   LastChangedBy,

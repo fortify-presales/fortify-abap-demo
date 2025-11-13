@@ -11,7 +11,7 @@
 # Helpful hints:
 #   
 
-name: Security Scan (Scancentral)
+name: Security Scan (ScanCentral)
 permissions:
   # required for all workflows
   security-events: write
@@ -133,7 +133,8 @@ jobs:
           SSC_APPVERSION: ${{ env.SSC_APPVER }}
           DO_SETUP: true
           # SETUP_ACTION: https://scm.my.org/shared-repos/fcli-actions/setup.yaml
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --issue-template {1}', env.SSC_PARENT_APPVER, '"Prioritized-HighRisk-Project-Template"') }} 
+          #SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --issue-template {1}', env.SSC_PARENT_APPVER, '"Prioritized-HighRisk-Project-Template"') }} 
+          SETUP_EXTRA_OPTS: ${{ format('--issue-template "Prioritized-HighRisk-Project-Template"') }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
           PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files"

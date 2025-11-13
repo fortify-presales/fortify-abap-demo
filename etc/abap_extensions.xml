@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageConfiguration>
+    <Language name="abap">
+        <Extensions>
+            <!-- ABAP Source Code File -->
+            <Extension>abap</Extension>
+            <!-- CDS Data Definition Language Source (Views) -->
+            <Extension>asddls</Extension>
+            <Extension>asbdef</Extension>
+            <Extension>asddlxs</Extension>
+            <Extension>srvdsrv</Extension>
+            <Extension>iwvb</Extension>
+        </Extensions>
+    </Language>
+</LanguageConfiguration>

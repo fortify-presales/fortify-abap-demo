@@ -102,7 +102,7 @@ To make use of the container you will need a license key. This can be carried ou
 
 Note: if you want to check the license key has been installed, you can enter the `SLICENSE` transaction code in the SAP GUI.
 
-# Install Fortify SAP Extractor
+## Install Fortify SAP Extractor
 
 To install the Fortify SAP Extractor we first need to re-create the
 TMS configuration as follows:
@@ -133,7 +133,7 @@ Now we can import the Fortify SAP Extractor as follows:
 - Select "**Menu -> Extras -> Other Requests -> Add**"
 - Click on the "Browse" icon
 - Select the `A4HK900157` Request and "Confirm"
-- Click on "Continue"
+- Click on "**Continue**" (Green Tick icon)
 - Click on "**Yes**"
 - Right-click on the new Request and select "**Import**" from the menu
 - For the "**Target Client**" field select `001`
@@ -142,33 +142,35 @@ Now we can import the Fortify SAP Extractor as follows:
 - On the "**Options**" tab select:
   - **Leave Transport Request in Queue for Later Import**
   - **Ignore Invalid Component Version**
-- Click on "Confirm"
+- Click on "**Confirm**" (Green Tick icon)
 - Select "**Yes**" to start the import - this might take a while!
 - Once finished "Exit" the TMS System.
 
-    >Although "installed" - Fortify ABAP Extractor program is not always visible,
-    if the program is not found below - try installing again with all Options selected 
-    to see if this works! TBD
-
-Finally, we need to create a new Transaction Code for the Fortify ABAP Extractor.
 Logout and logon as **DEVELOPER** using the following credentials:
 
-- Client: `000`
+- Client: `001`
 - User: `DEVELOPER`
 - Password: `ABAPtr2023#00`
 
-Then create the transaction code **YSCA** as follows:
+Check that the program runs by carrying out the following:
+
+- Enter the transactions code `SE80
+- Select **Program** and enter the name `YHP_FORTIFY_SCA`
+- Press return to load the program. 
+- Click on the "Direct Processing" icon to validate that the Fortify ABAP Extractor runs.
+
+Finally, we can create a new Transaction Code for the Fortify ABAP Extractor.
 
 - Enter the transaction code: `SE93`
 - Click on "**Create**"
 - Enter `YSCA` in the "**Transaction**" Code field
 - Enter `Fortify ABAP Extractor` in the "**Short Text**" field
 - Select "**Program and Selection Screen**"
-- Click on "**Continue**"
+- Click on "**Continue**" (Tick)
 - In the "**Program**" field click on the browse option and and select "**YHP_FORTIFY_SCA**"
 - Click on the "Save" icon.
 - Enter `$TMP` for the "**Package**` and click on "Save" again
-- Click on "Exit" twich
+- Click on "Exit/Cancel" icon twice to return to the top level
 - Finally enter the transaction code `YSCA` to confirm the program is available.
 
 
@@ -187,13 +189,13 @@ First create a transaction code **YGIT** as follows:
 - In the "**Program**" field click on the browse option and and select "**ZABAPGIT_STANDALONE**"
 - Click on the "Save" icon.
 - Enter `$TMP` for the "**Package**` and click on "Save" again
-- Click on "Exit" twich
+- Click on "Exit/Cancel" icon twice to return to the top level
 - Finally enter the transaction code `YGIT` to confirm the program is available.
 
 Now we can Import the repository from GitHub as follows:
 
 - Click on "New Online".
-- Enter `https://github.com/fortify-presales/fortify-sap-demo.git` for the "**Git Repository Url**
+- Enter `https://github.com/fortify-presales/fortify-abap-demo.git` for the "**Git Repository Url**
 - Enter `Z_FORTIFY_DEMO` for the "**Package**"
 - Enter `main` for the "**Branch**"
 - Select "**Prefix**" for the "**Folder Logic**"
@@ -201,7 +203,7 @@ Now we can Import the repository from GitHub as follows:
 - Once the repository has loaded click on "**Pull**" to download the files
 - You should be prompted that the objects are different between "local" and "remote", everything
 should be selected so just click on "Continue"
-- You will be prompted for a "workbech request", click on the "**Create Request**" icon and enter a name for the request, e.g. `Fortify SAP Demo Import` and click on "**Save**"
+- You will be prompted for a "workbech request", click on the "**Create Request**" icon and enter a "Short Description" for the request, e.g. `Fortify ABAP Demo Import` and click on "**Save**"
 - Click on "**Continue**"
 - Click on "**Continue**" again and then hopefully the files/objects should be imported
 
@@ -221,10 +223,14 @@ the Eclipse ABAP Development Tools. In order to do this you should install the f
   - [ABAP Development Tools Plugin](https://developers.sap.com/tutorials/abap-install-adt.html)
   - [abapGit Plugin](https://developers.sap.com/tutorials/abap-install-abapgit-plugin.html) (Optional)
 
-Note: the abapGit plugin will only work with a supported Cloud Environment, it cannot be used with the Container environment, however we can run abapGit from inside Eclipse using the `YGIT` transaction code as above.
+Note: the abapGit eclipse plugin will only work with a supported Cloud Environment like S4/HANA Cloud or SAP BTP, it cannot be used with the Container environment. However we can still run abapGit from inside Eclipse using the `YGIT` transaction code as above.
 
-Once you have installed the above, in Eclipse switch to the ABAP perspective.
-Select `New ABAP Project`, select the profile created for the SAP GUI above and login as `DEVELOPER` as before. The code imported from abapGit above should be available in the `FORTIFY_SAP_DEMO` package.
+Once you have installed the above, in Eclipse switch to the **ABAP** perspective.
+Select `New ABAP Project`, select the profile created for the SAP GUI above and login as `DEVELOPER` as before. The code imported from abapGit above should now be available in the `Z_FORTIFY_DEMO` package. There are three sub-packages:
+
+ - `Z_ABAP_CLASSIC` - some classic on-premise ABAP code with vulnerabilities
+ - `Z_ABAP_CLOUD` - some ABAP for Cloud and RAP code with vulnerabilities
+ - `Z_ABAP_PETSTORE` - a working demo application
 
 ## How to connect to Fiori Launchpad
 
@@ -241,24 +247,9 @@ loLogin gon as **DEVELOPER** using the following credentials:
 
 It might take a while to login and load the initial view the first time.
 
-## Deploying the Fiori App
+## Deploying the PetStore Fiori App
 
-In the `fiori` directory, there is a simple Fiori/JavaScript application that can be used to demonstration potential security vulnerabilities that can occur when developing custom applications.
-
-You can carry out a SAST scan of the application as normal.
-
-To deploy the application (for a DAST scan) you can carry out the following:
-
-```
-cd fiori
-npm run build
-npm run deploy-local
-```
-
-Then follow the instructions given here [here](https://blog.tinhtd.info/2021/07/deploy-sapui5-application-into-fiori.html). You will need to change the names to refer to
-this application.
-
-Note: The `/UI2/SEMOBJ` transactions is available through `/N/UI2/SEMOBJ`.
+TBD
 
 ---
 kadraman (klee2@opentext.com)

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RulePack xmlns="xmlns://www.fortifysoftware.com/schema/rules"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="RulePack">
+    <RulePackID>4AEF134A-4C99-4431-A897-6F6663203903</RulePackID>
+    <SKU>SKU-4AEF134A-4C99-4431-A897-6F6663203903</SKU>
+    <Name>DumpLine.xml</Name>
+    <Version>1.0</Version>
+    <Description>Fortify rule for dumping structural tree at specific line numbers</Description>
+    <Rules version="19.10">
+        <RuleDefinitions>
+            <StructuralRule formatVersion="19.10" language="abap">
+                <RuleID>224166A0-3461-4661-969E-918ED309AE34</RuleID>
+                <VulnKingdom>STRUCT_DUMP</VulnKingdom>
+                <VulnCategory>STRUCT_DUMP</VulnCategory>
+                <VulnSubcategory>STRUCT_DUMP</VulnSubcategory>
+                <DefaultSeverity>5.0</DefaultSeverity>
+                <Description ref="desc.struct.dump.line"/>
+                <Predicate><![CDATA[
+                    Expression e: e.sourceLocation.startLine == LINE_NUMBER
+                ]]></Predicate>
+            </StructuralRule>
+        </RuleDefinitions>
+        <Descriptions>
+            <Description id="desc.struct.dump.line" formatVersion="19.10">
+                <Abstract><![CDATA[Dumps structural tree information for debugging purposes]]></Abstract>
+                <Explanation><![CDATA[This rule is used for debugging Fortify's AST parsing by dumping structural information at specific line numbers.]]></Explanation>
+                <Recommendations><![CDATA[This is a debugging rule - no recommendations needed.]]></Recommendations>
+            </Description>
+        </Descriptions>
+    </Rules>
+</RulePack>

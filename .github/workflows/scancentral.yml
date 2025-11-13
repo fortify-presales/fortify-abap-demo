@@ -1,20 +1,17 @@
 
 # Create GitHub Action Repository Variables for your version of the application:
-#   FOD_URL                     - FoD Portal URL for your tenant (e.g. https://ams.fortify.com)
-#   FOD_API_URL                 - FoD API URL for your tenant (e.g. https://api.ams,fortify.com)
-#   FORTIFY_APP_NAME_POSTFIX    - A postfix string to apply to the application to make it unique, set to empty to use DEFAULT_APP_NAME
-#   FOD_PARENT_RELEASE_NAME     - FoD release name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
-#   FOD_DEFAULT_OWNER           - The user id of the Application Owner (only needed if an application does not already exist)
-#   FOD_DEFAULT_ASSESSMENT_TYPE - The default Assessment Type to use, e.g. "Static Assessment"
+#   SSC_URL                     - SSC URL for your environment
+#   SSC_API_URL                 - SSC API URL for your tenant (e.g. https://api.ams,fortify.com)
+#   SSC_APPNAME_POSTFIX         - A postfix string to apply to the application to make it unique, set to empty to use DEFAULT_APP_NAME
+#   SSC_PARENT_APPVER_NAME      - SSC application version name corresponding to the parent branch of any newly created branch, this is typically "main" or "develop"
+#   SSC_DEFAULT_OWNER           - The user id of the Application Owner (only needed if an application does not already exist)
 # Create GitHub Action Secrets for your version of the application:
-#   FOD_CLIENT_ID should be an API Key obtained from your FoD tenant.
-#   FOD_CLIENT_SECRET should be the secret for the API Key obtained for your FoD tenant.
+#   SSC_TOKEN should be a secret containing the SSC CI Token obtained from your SSC tenant.
+#   SC_SAST_CLIENT_AUTH_TOKEN should be a secret for the API Key obtained from your SSC tenant.
 # Helpful hints:
-#   API Key credentials can be obtained from your FoD tenant, under Administration -> Settings -> API
-#   It is recommended to create credentials with 'Security Lead' Role selected.
-#   "Automated Audit preference" should be configured for the release's Static Scan Settings.
+#   
 
-name: Security Scan (FoD)
+name: Security Scan (Scancentral)
 permissions:
   # required for all workflows
   security-events: write
@@ -51,8 +48,8 @@ on:
         description: 'Carry out Build and Unit Testing'
         required: false
         default: 'true'  
-      runFoDSASTScan:
-        description: 'Carry out SAST scan using Fortify on Demand'
+      runScancentralSASTScan:
+        description: 'Carry out SAST scan using Scancentral'
         required: false
         default: 'true'  
 
@@ -66,8 +63,8 @@ jobs:
   Env-Prepare:
     runs-on: ubuntu-latest
     outputs:
-      FOD_RELEASE: ${{ steps.commands.outputs.FOD_RELEASE }}
-      FOD_PARENT_RELEASE: ${{ steps.commands.outputs.FOD_PARENT_RELEASE }}
+      SSC_APPVER: ${{ steps.commands.outputs.SSC_APPVER }}
+      SSC_PARENT_APPVER: ${{ steps.commands.outputs.SSC_PARENT_APPVER }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,12 +73,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Running in a pull request pipeline ..."
-            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}" >> $GITHUB_OUTPUT
-            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "SSC_APPVER=${{ env.DEFAULT_APP_NAME }}${{ vars.SSC_APPNAME_POSTFIX }}:merge-to-${{ github.base_ref }}#PR${{ github.event.number }}" >> $GITHUB_OUTPUT
+            echo "SSC_PARENT_APPVER=${{ env.DEFAULT_APP_NAME }}${{ vars.SSC_APPNAME_POSTFIX }}:${{ github.head_ref }}" >> $GITHUB_OUTPUT
           else
             echo "Running in a branch pipeline ..."
-            echo "FOD_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
-            echo "FOD_PARENT_RELEASE=${{ env.DEFAULT_APP_NAME }}${{ vars.FOD_APP_NAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}" >> $GITHUB_OUTPUT
+            echo "SSC_APPVER=${{ env.DEFAULT_APP_NAME }}${{ vars.SSC_APPNAME_POSTFIX }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "SSC_PARENT_APPVER=${{ env.DEFAULT_APP_NAME }}${{ vars.SSC_APPNAME_POSTFIX }}:${{ env.DEFAULT_PARENT_RELEASE_NAME }}" >> $GITHUB_OUTPUT
           fi
 
   Build-And-Unit-Test:
@@ -109,43 +106,41 @@ jobs:
             echo "✅ abaplint validation passed"
           fi
 
-  FoD-SAST-Scan:
+  ScanCentral-SAST-Scan:
     runs-on: ubuntu-latest
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runFoDSASTScan == 'true') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'pull_request') || (github.event.inputs.runScancentralSASTScan == 'true') }}
     needs: [ Env-Prepare, Build-And-Unit-Test ]
     env: 
-      FOD_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_RELEASE }}
-      FOD_PARENT_RELEASE: ${{ needs.Env-Prepare.outputs.FOD_PARENT_RELEASE }}
+      SSC_APPVER: ${{ needs.Env-Prepare.outputs.SSC_APPVER }}
+      SSC_PARENT_APPVER: ${{ needs.Env-Prepare.outputs.SSC_PARENT_APPVER }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       #
       # See: https://github.com/marketplace/actions/fortify-ast-scan
       #
-      - name: Run Fortify on Demand SAST Scan
-        uses: fortify/github-action@v1
+      - name: Run ScanCentral SAST & Debricked scan
+        uses: fortify/github-action@v2
         with:
           sast-scan: true
-          debricked-sca-scan: false # we could do this separately using fcli
+          debricked-sca-scan: false # not valid for ABAP code
         env:
-          FOD_URL: ${{ vars.FOD_URL }}
-          #FOD_TENANT: ${{secrets.FOD_TENANT}}
-          #FOD_USER: ${{secrets.FOD_USER}}
-          #FOD_PASSWORD: ${{secrets.FOD_PAT}}
-          FOD_CLIENT_ID: ${{secrets.FOD_CLIENT_ID}}
-          FOD_CLIENT_SECRET: ${{secrets.FOD_CLIENT_SECRET}}
-          # FOD_LOGIN_EXTRA_OPTS: --socket-timeout=60s
-          # FOD_RELEASE: ${{ format('{0}{1}:{2}', env.DEFAULT_APP_NAME, vars.FOD_APP_NAME_POSTFIX, github.ref_name) }}
-          FOD_RELEASE: ${{ env.FOD_RELEASE }}
+          SSC_URL: ${{vars.SSC_URL}}
+          SSC_TOKEN: ${{secrets.SSC_TOKEN}}
+          SC_SAST_TOKEN: ${{secrets.SC_SAST_CLIENT_AUTH_TOKEN}}
+          # SSC_LOGIN_EXTRA_OPTS: --socket-timeout=60s
+          #DEBRICKED_TOKEN: ${{secrets.DEBRICKED_TOKEN}}
+          SSC_APPVERSION: ${{ env.SSC_APPVER }}
           # DO_SETUP: true
           # SETUP_ACTION: https://scm.my.org/shared-repos/fcli-actions/setup.yaml
-          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --app-owner {1} --assessment-type "{2}" --use-aviator --technology-stack=ABAP', env.FOD_PARENT_RELEASE, vars.FOD_DEFAULT_OWNER, vars.FOD_DEFAULT_ASSESSMENT_TYPE) }} 
+          SETUP_EXTRA_OPTS: ${{ format('--copy-from "{0}" --sdlc-status Development --issue-template {1}', env.SSC_PARENT_APPVER, 'Prioritized High Risk Issue Template') }} 
           # SC_CLIENT_VERSION: 24.4.1
           # DO_PACKAGE_DEBUG: true
-          PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files" 
-          # FOD_SAST_SCAN_EXTRA_OPTS:
+          PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files"
+          # SC_SAST_SENSOR_VERSION: 24.4.1
+          EXTRA_SC_SAST_SCAN_OPTS: -rules ./etc/custom_abap_rules.xml
           # DO_WAIT: true
-          DO_POLICY_CHECK: true # we could do this later after SCA and DAST scan
+          DO_POLICY_CHECK: true
           # POLICY_CHECK_ACTION: https://scm.my.org/shared-repos/fcli-actions/check-policy.yaml
           # POLICY_CHECK_EXTRA_OPTS: --on-unsigned=ignore
           DO_JOB_SUMMARY: true
@@ -158,4 +153,3 @@ jobs:
           # EXPORT_ACTION: https://scm.my.org/shared-repos/fcli-actions/github-sast-report.yaml
           # EXPORT_EXTRA_OPTS: --on-unsigned=ignore
           # TOOL_DEFINITIONS: https://ftfy.mycompany.com/tool-definitions/v1/tool-definitions.yaml.zip
- 

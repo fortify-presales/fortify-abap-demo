@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RulePack xmlns="xmlns://www.fortifysoftware.com/schema/rules">
+   <RulePackID>393BB540-BC44-4C93-9EB5-F0CD57E2C47D</RulePackID>
+   <SKU>NA</SKU>
+   <Name><![CDATA[Fortify Secure Coding Rules, Custom, ABAP-RAP]]></Name>
+   <Version>1.0.0</Version>
+   <Language>abap</Language>
+   <Description><![CDATA[Provides coverage of security relevant ABAP RESTful Application Programming Model (RAP) ABAP. Copyright 2011 - 2025 Open Text.]]></Description>
+   <Locale>en</Locale>
+   <Rules version="3.2" minimumSCA="21.1">
+      <Notes>
+         <Note><![CDATA[Custom rules for ABAP RESTful Application Programming Model (RAP). Copyright 2011 - 2025 Open Text.]]></Note>
+      </Notes>
+      <RuleDefinitions>
+
+         <StructuralRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-STRUCTURAL-DML-AUTH-CHECK</RuleID>
+            <MetaInfo>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Missing Authorization</VulnCategory>
+            <VulnSubcategory>DML without Authorization Check</VulnSubcategory>
+            <DefaultSeverity>5.0</DefaultSeverity>
+            <Description ref="desc.structural.rap.missing_authority_check_dml"/>
+            <Predicate><![CDATA[
+               FunctionCall call: 
+                  call.function.name matches "(?i)insert_dbtab|update_dbtab|delete_dbtab|modify_dbtab"
+                  and call.function.namespace.name matches "(?i)fortify\$ABAP"
+                  and not call.enclosingFunction contains [FunctionCall auth:
+                     auth.function.name matches "(?i)authority_check.*"
+                     and auth.function.namespace.name matches "(?i)fortify\$ABAP" 
+                  ]
+            ]]></Predicate>
+         </StructuralRule> 
+
+         <StructuralRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-STRUCTURAL-LOGGING-INSECURE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">3.0</Group>
+               <Group name="Accuracy">3.5</Group>
+               <Group name="Probability">2.5</Group>
+               <Group name="RemediationEffort">2.0</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Information Disclosure</VulnCategory>
+            <VulnSubcategory>Insecure Logging</VulnSubcategory>
+            <DefaultSeverity>3.0</DefaultSeverity> 
+            <Description ref="desc.structural.rap.logging_sensitive_data"/>
+            <Predicate><![CDATA[
+               FunctionCall fc: fc.function.name matches "(?i)create"
+                  and fc.function.enclosingClass.supers contains [Class c: c.name matches "(?i)cl_bali_message_setter"]
+                  and fc.namedParameters contains [NamedParameter np: np.name matches "(?i)variable_.*"]
+            ]]></Predicate>
+         </StructuralRule>
+        
+         <StructuralRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-STRUCTURAL-DML-BULK-OPERATIONS</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP RAP</Group>
+            </MetaInfo>
+            <VulnKingdom>Input Validation and Representation</VulnKingdom>
+            <VulnCategory>Mass Assignment</VulnCategory>
+            <VulnSubcategory>Bulk Operation Without Restriction</VulnSubcategory>
+            <DefaultSeverity>3.0</DefaultSeverity>
+            <Description ref="desc.structural.rap.bulk_operations"/>
+            <Predicate><![CDATA[
+               FunctionCall call: call.function.name matches "(?i)insert_dbtab|update_dbtab|delete_dbtab|modify_dbtab"
+                  and call.function.namespace is [ Namespace: name matches "(?i)fortify\$ABAP" ] and
+                  not ( call.arguments contains [FunctionCall fc: fc.function.name matches "(?i)insert_dbtab_where|update_dbtab_where|delete_dbtab_where|modify_dbtab_where"] )
+            ]]></Predicate>
+         </StructuralRule>
+
+         <!-- DataFlowSinkRule for any if_oo_adt_classrun_out->write -->
+         <DataflowSinkRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-DATAFLOW-SINK-CLASSRUN-WRITE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">3.0</Group>
+               <Group name="Accuracy">4.0</Group>
+               <Group name="Probability">3.0</Group>
+               <Group name="RemediationEffort">2.0</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Information Disclosure</VulnCategory>
+            <VulnSubcategory>Sensitive Data in Console Output</VulnSubcategory>
+            <DefaultSeverity>3.0</DefaultSeverity>
+            <Description ref="desc.dataflow.abap.console_output_privacy_violation"/>
+            <Sink>
+               <InArguments>0</InArguments>
+               <Conditional>
+                  <And>
+                     <Not>
+                        <TaintFlagSet taintFlag="VALIDATED_PRIVACY_VIOLATION"/>
+                     </Not>
+                     <TaintFlagSet taintFlag="PRIVATE"/>
+                  </And>
+               </Conditional>
+            </Sink>
+            <FunctionIdentifier>
+               <ClassName>
+                  <Value caseInsensitive="true"><![CDATA[if_oo_adt_classrun_out]]></Value>
+               </ClassName>
+               <FunctionName>
+                  <Pattern caseInsensitive="true"><![CDATA[write(_.*)?|display]]></Pattern>
+               </FunctionName>
+            </FunctionIdentifier>
+         </DataflowSinkRule>
+
+         <!-- DataFlowSinkRule for any generic out->write -->
+         <DataflowSinkRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-DATAFLOW-SINK-CLASSRUN-OUT-WRITE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">3.0</Group>
+               <Group name="Accuracy">4.0</Group>
+               <Group name="Probability">3.0</Group>
+               <Group name="RemediationEffort">2.0</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Information Disclosure</VulnCategory>
+            <VulnSubcategory>Sensitive Data in Console Output</VulnSubcategory>
+            <DefaultSeverity>5.0</DefaultSeverity>
+            <Description ref="desc.dataflow.abap.sensitive_console_output"/>
+            <Sink>
+               <InArguments>0</InArguments>
+               <Conditional>
+                  <And>
+                     <Not>
+                        <TaintFlagSet taintFlag="VALIDATED_PRIVACY_VIOLATION"/>
+                     </Not>
+                     <TaintFlagSet taintFlag="PRIVATE"/>
+                  </And>
+               </Conditional>
+            </Sink>
+            <FunctionIdentifier>
+               <!--NamespaceName>
+                  <Value caseInsensitive="true"><![CDATA[fortify$ABAP]]></Value>
+               </NamespaceName-->
+               <ClassName>
+                  <Value caseInsensitive="true"><![CDATA[out]]></Value>
+               </ClassName>
+               <FunctionName>
+                  <Pattern caseInsensitive="true"><![CDATA[write(_.*)?|display]]></Pattern>
+               </FunctionName>
+            </FunctionIdentifier>
+         </DataflowSinkRule>
+
+         <!-- DataFlowSinkRule for MESSAGE -->
+         <DataflowSinkRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-DATAFLOW-SINK-MESSAGE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">4.0</Group>
+               <Group name="Accuracy">4.0</Group>
+               <Group name="Probability">3.5</Group>
+               <Group name="RemediationEffort">2.0</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Information Disclosure</VulnCategory>
+            <VulnSubcategory>Sensitive Data in Messages</VulnSubcategory>
+            <DefaultSeverity>5.0</DefaultSeverity>
+            <Description ref="desc.dataflow.abap.message_sensitive_output"/>
+            <Sink>
+               <InArguments>1</InArguments>
+               <Conditional>
+                  <And>
+                     <Not>
+                        <TaintFlagSet taintFlag="VALIDATED_PRIVACY_VIOLATION"/>
+                     </Not>
+                     <TaintFlagSet taintFlag="PRIVATE"/>
+                  </And>
+               </Conditional>
+            </Sink>
+            <FunctionIdentifier>
+               <NamespaceName>
+                  <Value caseInsensitive="true"><![CDATA[fortify$ABAP]]></Value>
+               </NamespaceName>
+               <FunctionName>
+                  <Value caseInsensitive="true"><![CDATA[message]]></Value>
+               </FunctionName>
+            </FunctionIdentifier>
+         </DataflowSinkRule>
+
+         <!-- 
+            The following is an attempt at characterization rule for cl_bali_message_setter=>create
+            but it does not seem to be working as expected. Leaving it here for future reference.
+            Example code we are trying to handle:
+
+               DATA(lo_msg) = cl_bali_message_setter=>create(
+                  severity    = if_bali_constants=>c_severity_information
+                  id          = 'ZMSG'       " Message class
+                  number      = '001'        " Message number
+                  variable_1  = |User: { lv_user }|
+                  variable_2  = |Password: { lv_password }|
+               ).
+         -->
+         <CharacterizationRule formatVersion="6.30" language="abap">
+            <RuleID>ABAP-CHARACTERIZATION-BALI-LOG</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+            </MetaInfo>
+            <VulnKingdom>Input Validation and Representation</VulnKingdom>
+            <VulnCategory>Log Forging</VulnCategory>
+            <DefaultSeverity>2.0</DefaultSeverity>
+            <Description ref="desc.dataflow.abap.log_forging"/>
+            <StructuralMatch><![CDATA[
+               FunctionCall fc: function.name matches "(?i)create"
+                  and fc.function.enclosingClass.supers contains [Class c: c.name matches "(?i)cl_bali_message_setter"]
+                  and namedParameters contains [
+                     NamedParameter: name matches "(?i)variable.*" and
+                     expression is [Expression variable: ]
+                  ]
+            ]]></StructuralMatch>
+            <Definition><![CDATA[
+               TaintSink(variable, [!VALIDATED_LOG_FORGING])
+            ]]></Definition>
+         </CharacterizationRule>
+
+         <!-- 
+            The following is an attempt a dataflow passthrough rule for MESSAGE and WITH
+            but it does not seem to be working as expected. Leaving it here for future reference.
+            Example code we are trying to handle:
+
+               MESSAGE i014(sabapdemos)
+                        WITH ls_creds-uid ls_creds-password
+                        INTO DATA(msg).
+               out->write( msg ).
+         -->
+         <DataflowPassthroughRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-DATAFLOW-PASSTHROUGH-MESSAGE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+            </MetaInfo>
+            <FunctionIdentifier>
+               <NamespaceName>
+                  <Value caseInsensitive="true"><![CDATA[fortify$ABAP]]></Value>
+               </NamespaceName>
+               <FunctionName>
+                  <Value caseInsensitive="true"><![CDATA[message]]></Value>
+               </FunctionName>
+               <ApplyTo implements="true" overrides="true" extends="true"/>
+            </FunctionIdentifier>
+            <InArguments>1...</InArguments>
+            <OutArguments>return</OutArguments>
+         </DataflowPassthroughRule>
+
+         <DataflowPassthroughRule formatVersion="24.4" language="abap">
+            <RuleID>ABAP-DATAFLOW-PASSTHROUGH-WITH</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+            </MetaInfo>
+            <FunctionIdentifier>
+               <NamespaceName>
+                  <Value caseInsensitive="true"><![CDATA[fortify$ABAP]]></Value>
+               </NamespaceName>
+               <FunctionName>
+                  <Value caseInsensitive="true"><![CDATA[with]]></Value>
+               </FunctionName>
+               <ApplyTo implements="true" overrides="true" extends="true"/>
+            </FunctionIdentifier>
+            <InArguments>1...</InArguments>
+            <OutArguments>return</OutArguments>
+         </DataflowPassthroughRule>
+
+         <RegexRule formatVersion="21.2">
+            <RuleID>RAP-CDL-MISSING-AUTHORIZATION</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">5.0</Group>
+               <Group name="Accuracy">4.5</Group>
+               <Group name="Probability">4.0</Group>
+               <Group name="RemediationEffort">3.0</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Missing Authorization</VulnCategory>
+            <VulnSubcategory>Access Control Disabled</VulnSubcategory>
+            <DefaultSeverity>4.0</DefaultSeverity>
+            <Description ref="desc.structural.rap.missing_authorization_check"/>
+            <ContentRegex><![CDATA[@AccessControl\.authorizationCheck:\s*#NOT_REQUIRED]]></ContentRegex>
+         </RegexRule>
+
+         <RegexRule formatVersion="21.2">
+            <RuleID>RAP-CDL-SENSITIVE-FIELD-EXPOSURE</RuleID>
+            <MetaInfo>
+               <Group name="package">ABAP Custom</Group>
+               <Group name="Impact">3.5</Group>
+               <Group name="Accuracy">3.5</Group>
+               <Group name="Probability">3.0</Group>
+               <Group name="RemediationEffort">1.5</Group>
+               <Group name="audience">broad,fod</Group>
+            </MetaInfo>
+            <VulnKingdom>Security Features</VulnKingdom>
+            <VulnCategory>Information Disclosure</VulnCategory>
+            <VulnSubcategory>Sensitive Field Exposure</VulnSubcategory>
+            <DefaultSeverity>2.0</DefaultSeverity>
+            <Description ref="desc.structural.rap.sensitive_field_exposure"/>
+            <ContentRegex><![CDATA[(?s)as\s+projection\s+on\s+\w+\s*\{[^}]*(?<!@UI\.hidden[^\r\n]*[\r\n]\s*)(InternalComment|Password|SSN|CreditCardNumber|TaxID|PassportNumber|Token|AccessToken|ApiKey|SecretKey|PrivateKey|PIN|OTP)]]></ContentRegex>
+         </RegexRule>
+
+      </RuleDefinitions>
+
+      <Descriptions>
+
+         <Description id="desc.structural.rap.missing_authority_check_dml" formatVersion="24.4">
+            <Abstract><![CDATA[Database modification without authorization check detected]]></Abstract>
+            <Explanation><![CDATA[The code performs database modifications (INSERT, UPDATE, DELETE, MODIFY) without any preceding AUTHORITY-CHECK calls in the same function. This violates SAP security principles and could allow unauthorized data manipulation.]]></Explanation>
+            <Recommendations><![CDATA[Always perform AUTHORITY-CHECK before database modifications. Use appropriate authorization objects like S_TABU_DIS for table access or implement CDS Data Control Language (DCL) for declarative authorization.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Authorization Concepts</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+         
+         <Description id="desc.structural.rap.custom_function_module" formatVersion="24.4">
+            <Abstract><![CDATA[Custom function module invocation detected]]></Abstract>
+            <Explanation><![CDATA[Detects CALL FUNCTION statements invoking custom modules (Z_* or Y_*), which may bypass cloud whitelisting.]]></Explanation>
+            <Recommendations><![CDATA[Replace legacy function calls with released APIs or wrap them in a controlled service with authorization checks.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP BTP ABAP Environment - Released APIs</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP Cloud Development Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.dynamic_sql" formatVersion="24.4">
+            <Abstract><![CDATA[Dynamic SQL statement detected]]></Abstract>
+            <Explanation><![CDATA[Detects EXEC SQL or SELECT with string concatenation that could allow SQL injection.]]></Explanation>
+            <Recommendations><![CDATA[Avoid dynamic SQL; use parameterized statements or CDS entities.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP ABAP SQL Injection Prevention</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP SQL Injection Prevention Cheat Sheet</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP CDS Views - Secure Data Access</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.sensitive_field_exposure" formatVersion="24.4">
+            <Abstract><![CDATA[Sensitive field exposed without UI hiding annotation]]></Abstract>
+            <Explanation><![CDATA[Flags CDS entities exposing fields containing sensitive keywords without @UI.hidden annotation.]]></Explanation>
+            <Recommendations><![CDATA[Hide sensitive fields or move them to an internal projection view.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Fiori Elements - UI Annotations</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP RESTful Programming Model - CDS Annotations</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP Data Privacy Protection in UI</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.logging_sensitive_data" formatVersion="24.4">
+            <Abstract><![CDATA[Insecure logging implementation detected]]></Abstract>
+            <Explanation><![CDATA[The code uses cl_bali_message_setter=>create() for application logging, which may inadvertently log sensitive information if not properly configured with data masking or filtering. The BALI (Business Application Log Interface) framework can capture detailed information including variable values, which could expose passwords, personal data, or other sensitive information in log files. This poses a security risk as log files are often accessible to administrators, stored in less secure locations, or transmitted to external log management systems.]]></Explanation>
+            <Recommendations><![CDATA[Implement proper data classification and masking when using BALI logging. Avoid passing sensitive data directly to log message variables. Use structured logging with appropriate security controls and data redaction. Configure log retention policies and access controls to protect log data. Consider using SAP's data privacy frameworks to automatically mask sensitive fields in log output. Regularly audit log content and access patterns to ensure compliance with data protection requirements.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Business Application Log Interface (BALI) - Security Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP Logging Cheat Sheet</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP Data Privacy and Protection in Application Logging</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>GDPR Data Protection in Logging</Title>
+                  <Author>European Union</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.bulk_operations" formatVersion="24.4">
+            <Abstract><![CDATA[Bulk database operation without WHERE condition detected]]></Abstract>
+            <Explanation><![CDATA[The code performs a bulk database operation (DELETE, UPDATE, INSERT, or MODIFY) without a WHERE clause, which affects all records in the target table. This can lead to unintended data loss, performance issues, and potential security vulnerabilities. In ABAP systems, especially in productive environments, such operations can cause significant business disruption and data integrity issues.]]></Explanation>
+            <Recommendations><![CDATA[Always include appropriate WHERE conditions to limit the scope of bulk operations. Consider implementing authorization checks before performing bulk modifications. For large datasets, use batch processing with proper error handling. In RAP applications, leverage CDS access controls and draft handling mechanisms to prevent uncontrolled data modifications.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP ABAP Programming Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP RESTful Application Programming Model - Security Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.priv.hardcoded_credentials" formatVersion="24.4">
+            <Abstract><![CDATA[Hardcoded credentials detected in source code]]></Abstract>
+            <Explanation><![CDATA[The code contains hardcoded usernames or passwords in string literals. This creates a security risk as credentials are exposed in source code and cannot be easily changed without code modifications.]]></Explanation>
+            <Recommendations><![CDATA[Store credentials in secure configuration files, environment variables, or credential management systems. Never hardcode credentials in source code.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Destination Service - Secure Credential Management</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP Cryptographic Storage Cheat Sheet</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP BTP Security - Credential Management</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+         
+         <Description id="desc.priv.logging_sensitive" formatVersion="24.4">
+            <Abstract><![CDATA[Sensitive data being logged or displayed]]></Abstract>
+            <Explanation><![CDATA[The code contains string literals that reference sensitive information like passwords, credentials, or secrets that may be logged or displayed to users.]]></Explanation>
+            <Recommendations><![CDATA[Avoid logging sensitive data. Use masking, redaction, or exclude sensitive fields from log output entirely.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Data Privacy and Logging Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP Logging Cheat Sheet</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+               <Reference>
+                  <Title>PCI DSS Logging and Monitoring Requirements</Title>
+                  <Author>PCI Security Standards Council</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.dataflow.abap.sensitive_console_output" formatVersion="24.4">
+            <Abstract><![CDATA[Sensitive data written to console output]]></Abstract>
+            <Explanation><![CDATA[The application writes potentially sensitive data to the console output using if_oo_adt_classrun_out->write(). While this output appears only in ABAP Development Tools (ADT) console during development and testing, it can still pose significant security risks. Console output may be visible during screen sharing sessions, captured in screenshots, logged by development tools, or accessed by other users with system access. Sensitive information such as passwords, authentication tokens, personal identifiable information (PII), credit card numbers, or internal system details should never be displayed in console output, even in development environments.]]></Explanation>
+            <Recommendations><![CDATA[Implement data masking or redaction for sensitive information before console output. Use generic success/failure messages instead of exposing actual sensitive values. For debugging purposes, consider logging only non-sensitive portions of data structures. Implement proper logging frameworks with security controls rather than console output for production applications. Use structured logging with appropriate classification levels and ensure sensitive data is never logged at any level accessible to unauthorized personnel.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP ABAP Development Tools - Security Best Practices</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP Logging Cheat Sheet</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP Data Privacy and Protection Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.dataflow.abap.message_sensitive_output" formatVersion="24.4">
+            <Abstract><![CDATA[Sensitive data exposed through MESSAGE statements]]></Abstract>
+            <Explanation><![CDATA[The application displays sensitive data through ABAP MESSAGE statements. MESSAGE statements are visible to end users through the SAP GUI, web interfaces, or other user-facing applications. When sensitive information like passwords, tokens, personal data, or internal system details flows into MESSAGE statements, it creates a direct information disclosure vulnerability that can be exploited by unauthorized users or captured in user interface logs and screenshots.]]></Explanation>
+            <Recommendations><![CDATA[Never include sensitive data in user-facing MESSAGE statements. Use generic error messages that provide sufficient information for user guidance without exposing sensitive details. Implement proper error handling that logs detailed information securely server-side while presenting sanitized messages to users. For debugging purposes, use development-only logging mechanisms instead of user-visible messages.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP User Interface Security Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OWASP Information Exposure Prevention</Title>
+                  <Author>OWASP Foundation</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.abap.missing_copyright" formatVersion="24.4">
+            <Abstract><![CDATA[Missing copyright notice]]></Abstract>
+            <Explanation><![CDATA[Source files should begin with a comment block that includes the copyright notice, file description, and other relevant metadata. This comment block is important for legal protection and proper attribution of the code.]]></Explanation>
+            <Recommendations><![CDATA[Add a comment block at the beginning of the source file containing the copyright notice and other relevant information. Follow the SAP guidelines for comment header formatting.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP ABAP Programming Guidelines</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.missing_authorization_check" formatVersion="25.4">
+            <Abstract><![CDATA[CDS view with disabled authorization check detected]]></Abstract>
+            <Explanation><![CDATA[The CDS view uses @AccessControl.authorizationCheck: #NOT_REQUIRED, which completely disables authorization checks for all data access. This annotation bypasses SAP's built-in authorization framework, allowing any user to access all records in the view regardless of their authorization profile. In productive systems, this creates a significant security vulnerability as sensitive business data may be exposed to unauthorized users, potentially violating data privacy regulations and corporate security policies.]]></Explanation>
+            <Recommendations><![CDATA[Remove the @AccessControl.authorizationCheck: #NOT_REQUIRED annotation and implement proper authorization controls. Use @AccessControl.authorizationCheck: #CHECK (default) and create corresponding CDS Data Control Language (DCL) access control definitions (.dcls files) to restrict data access based on user authorizations. For development/testing purposes, use @AccessControl.authorizationCheck: #NOT_ALLOWED to prevent accidental data exposure. Consider implementing field-level authorization using @AccessControl.personalData annotations for sensitive data fields.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP CDS Data Control Language (DCL) - Authorization Checks</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP RESTful Programming Model - Authorization and Access Control</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP Security Guide - CDS View Authorization</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>GDPR Compliance in SAP Systems - Data Access Controls</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+         <Description id="desc.structural.rap.sensitive_field_exposure" formatVersion="25.4">
+            <Abstract><![CDATA[Sensitive field exposed in CDS projection view without UI hiding]]></Abstract>
+            <Explanation><![CDATA[The CDS projection view exposes sensitive fields (Password, SSN, Token etc.) without proper UI hiding annotations. CDS projection views define the external interface for RAP applications and directly control what data is visible to end users through Fiori UIs, OData services, and other consumption layers. When sensitive fields lack @UI.hidden annotations, they become visible in UI applications, potentially exposing confidential information like internal comments, passwords, or personally identifiable information (PII) to unauthorized users. This violates the principle of least privilege and may lead to data privacy violations.]]></Explanation>
+            <Recommendations><![CDATA[Add @UI.hidden: true annotation above sensitive fields to prevent them from appearing in UI applications. For fields that must be accessible programmatically but not visible in the UI, use @UI.hidden: true while keeping them in the projection. For highly sensitive data, consider moving these fields to a separate internal view that is not exposed through the projection layer. Implement field-level authorization using @AccessControl.personalData annotations for PII data. Review all projection views to ensure only necessary fields are exposed to the consumption layer.]]></Recommendations>
+            <References>
+               <Reference>
+                  <Title>SAP Fiori Elements - UI Annotations for Field Control</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>ABAP RESTful Programming Model - CDS Projection Views</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>SAP CDS Views - Personal Data and Privacy Protection</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+               <Reference>
+                  <Title>OData Service Security - Field-Level Data Exposure</Title>
+                  <Author>SAP SE</Author>
+               </Reference>
+            </References>
+         </Description>
+
+      </Descriptions>
+
+   </Rules>
+
+</RulePack>

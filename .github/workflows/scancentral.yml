@@ -138,7 +138,7 @@ jobs:
           # DO_PACKAGE_DEBUG: true
           PACKAGE_EXTRA_OPTS: -exclude "docs" -exclude "files"
           # SC_SAST_SENSOR_VERSION: 24.4.1
-          EXTRA_SC_SAST_SCAN_OPTS: -rules ./etc/custom_abap_rules.xml
+          EXTRA_SC_SAST_SCAN_OPTS: --sargs "'-rules' '@./etc/custom_abap_rules.xml'"
           # DO_WAIT: true
           DO_POLICY_CHECK: true
           # POLICY_CHECK_ACTION: https://scm.my.org/shared-repos/fcli-actions/check-policy.yaml

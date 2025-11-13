@@ -7,7 +7,7 @@ ENDCLASS.
 CLASS zcl_legacy_call IMPLEMENTATION.
 
   METHOD call_legacy.
-    " ❌ Insecure call
+    " Insecure call
     CALL FUNCTION 'Z_LEGACY_CREATE_TRAVEL'
       EXPORTING iv_data = 'TEST'.
   ENDMETHOD.

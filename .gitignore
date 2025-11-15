@@ -9,3 +9,4 @@ etc/extended_*.xml
 *.fpr
 *.pdf
 test_isolated/
+metadata.xml
